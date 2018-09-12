@@ -1,0 +1,55 @@
+<html>
+<head>
+
+<style type="text/css">
+
+body{
+	text-align: center;
+	font-family: monospace;
+}
+
+.fortune {
+	margin:10% 20% 5% 20%;
+	font-size:50px;
+}
+
+</style>
+
+</head>
+
+<body>
+<script src="https://d3js.org/d3.v4.min.js"></script>
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.1.1/jquery.min.js"></script>
+
+<div class="fortune"><p></p></div>
+<button class="next-button">New Fortune</button>
+<script>
+
+function getRandomInt(max){
+	return Math.floor(Math.random() * Math.floor(max));
+}
+
+
+$(document).ready(function(){
+
+	d3.tsv("sentences.tsv", function(err, data){
+		if(err) console.warn(err, "error loading data");
+
+		var i = getRandomInt((data.length-1));
+
+		$(".fortune").text(data[i].sentences);
+
+		$(".next-button").click(function(){
+			i = getRandomInt((data.length-1))
+			$(".fortune").text(data[i].sentences);
+		})
+
+	})
+
+})
+
+
+</script>
+
+</body>
+</html>
