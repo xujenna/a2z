@@ -1,0 +1,132 @@
+<html>
+<head>
+  <!DOCTYPE html>
+  <meta charset="utf-8">
+
+  <style type="text/css">
+body{
+	text-align: center;
+	font-family: monospace;
+}
+
+.container {
+	margin:10% 20% 5% 20%;
+}
+
+#fortune {
+font-size:50px;
+margin-bottom:50px;
+}
+</style>
+  </head>
+
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/2.1.3/jquery.min.js"></script>
+  <script src="./rita.js"></script>
+      <script src="https://cdnjs.cloudflare.com/ajax/libs/p5.js/0.7.1/p5.min.js"></script>
+
+<div class="container">
+<div id="fortune">✨🔮✨</div>
+
+<input type="submit" value="Speak what you would like to know." id="submit">
+</div>
+  <script>
+  var source1, source2, source3, markov;
+
+  const SpeechRecognition = webkitSpeechRecognition;
+  const synth = window.speechSynthesis;
+
+
+  const getSpeech = () => {
+    const recognition = new SpeechRecognition();
+    recognition.lang = "en-US";
+
+    recognition.start();
+    console.log("recording");
+
+    recognition.onresult = event => {
+      console.log(event.results)
+      let speechResult = event.results[0][0].transcript;
+      console.log("result: " + speechResult);
+
+      generateSentence(speechResult);
+    }
+  }
+
+
+
+  const speak = (textInput) => {
+  	if(synth.speaking){
+  		console.error("already speaking");
+  		return;
+  	}
+
+  	let utterThis = new SpeechSynthesisUtterance(textInput)
+
+  	utterThis.pitch = 0.5;
+  	utterThis.rate = 0.75;
+  	synth.speak(utterThis);
+
+  }
+
+
+  const generateSentence = (speechResult) => {
+
+    let wordArray = speechResult.split(' ');
+    let newSource = ""
+    for(var i = 0; i < wordArray.length; i++){
+      let newWord = RiTa.stem(wordArray[i])
+        let newTextSource = RiTa.kwic(markov.rawText, newWord, args);
+        // console.log(newTextSource.join(' '))
+        newSource += newTextSource.join(' ')
+    }
+
+    markov.loadText(newSource, 5)
+
+
+    var response = markov.generateSentences(1)
+    speak(response)
+
+    const newTextNode = document.createTextNode(response)
+    const fortune = document.getElementById("fortune")
+    fortune.innerHTML = "✨🔮✨<br>"
+    fortune.appendChild(newTextNode);
+
+  }
+
+  function preload(){
+  	source1 = loadStrings("./ggia.txt");
+  	source2 = loadStrings("./horoscope.txt");
+  	source3 = loadStrings("./oprah.txt");
+  }
+
+  function setup(){
+	markov = new RiMarkov(4);
+	markov.loadText(source1.join(' '));
+	markov.loadText(source2.join(' '));
+	markov.loadText(source3.join(' '));
+
+	// var response = markov.generateSentences(1)
+	// speak(response)
+	// $('#content').text(response);
+
+  }
+
+  var args = {
+  	ignoreCase: true,
+  	ignorePunctuation: true,
+  	wordCount: 20,
+  	ignoreStopWords: true,
+  	wordsToIgnore: ["I", "you", "what", "how"]
+  }
+	
+
+
+  document.querySelector('#submit').onclick = () => {
+
+    getSpeech();
+ 
+  }
+
+  </script>
+  <div id="content"></div>
+<html>
