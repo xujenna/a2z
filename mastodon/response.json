@@ -1,0 +1,73 @@
+{
+  "data": {
+    "id": "1069984",
+    "type": "image",
+    "url": "https://files.botsin.space/media_attachments/files/001/069/984/original/d1d3bf4c74f7df4a.jpg",
+    "preview_url": "https://files.botsin.space/media_attachments/files/001/069/984/small/d1d3bf4c74f7df4a.jpg",
+    "remote_url": null,
+    "text_url": "https://botsin.space/media/hvoUnZX6uyaKiZmip00",
+    "meta": {
+      "original": {
+        "width": 800,
+        "height": 500,
+        "size": "800x500",
+        "aspect": 1.6
+      },
+      "small": {
+        "width": 506,
+        "height": 316,
+        "size": "506x316",
+        "aspect": 1.6012658227848102
+      }
+    },
+    "description": "a cute grey kitten found on google image search"
+  },
+  "resp": {
+    "statusCode": 200,
+    "headers": {
+      "date": "Wed, 03 Oct 2018 16:54:49 GMT",
+      "content-type": "application/json; charset=utf-8",
+      "transfer-encoding": "chunked",
+      "connection": "close",
+      "server": "Mastodon",
+      "x-frame-options": "DENY",
+      "x-content-type-options": "nosniff, nosniff",
+      "x-xss-protection": "1; mode=block",
+      "x-ratelimit-limit": "30",
+      "x-ratelimit-remaining": "29",
+      "x-ratelimit-reset": "2018-10-03T17:00:00.793939Z",
+      "vary": "Accept-Encoding, Origin",
+      "content-encoding": "gzip",
+      "etag": "W/\"c0bee08420b3dfdf3b97b0f3fa66375d\"",
+      "cache-control": "max-age=0, private, must-revalidate",
+      "x-request-id": "87d9e860-10a3-43b5-82b3-15d43ec3c199",
+      "x-runtime": "0.337589",
+      "strict-transport-security": "max-age=31536000; includeSubDomains"
+    },
+    "request": {
+      "uri": {
+        "protocol": "https:",
+        "slashes": true,
+        "auth": null,
+        "host": "botsin.space",
+        "port": 443,
+        "hostname": "botsin.space",
+        "hash": null,
+        "search": null,
+        "query": null,
+        "pathname": "/api/v1/media",
+        "path": "/api/v1/media",
+        "href": "https://botsin.space/api/v1/media"
+      },
+      "method": "POST",
+      "headers": {
+        "Accept": "*/*",
+        "User-Agent": "node-mastodon-client",
+        "Authorization": "Bearer 582285e8db0012a44af3e1829fce14c3672f4c5e228bdc1ef91017a1ab0cc210",
+        "Content-type": "multipart/form-data; boundary=--------------------------446014021427338537305899",
+        "accept-encoding": "gzip, deflate",
+        "content-length": 41311
+      }
+    }
+  }
+}

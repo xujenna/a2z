@@ -1,0 +1,14 @@
+{
+  "name": "a2z_mastodon_example",
+  "version": "0.0.1",
+  "description": "mastodon example",
+  "main": "bot.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "xujenna",
+  "license": "MIT",
+  "dependencies": {
+    "mastodon-api": "^1.3.0"
+  }
+}

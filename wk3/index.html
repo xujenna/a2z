@@ -13,20 +13,87 @@ body{
 	margin:10% 20% 5% 20%;
 }
 
-#fortune {
+.fortune-container {
 font-size:50px;
 margin-bottom:50px;
 }
+
+#loader {
+  position: fixed;
+  left: 50%;
+  top: 50%;
+  z-index: 1;
+  margin: -30px 0 0 -30px;
+  border: 6px dotted silver;
+  border-radius: 50%;
+  border-top: 6px solid transparent;
+  width: 40px;
+  height: 40px;
+  -webkit-animation: spin 2s linear infinite;
+  animation: spin 2s linear infinite;
+}
+
+@-webkit-keyframes spin {
+  0% { -webkit-transform: rotate(0deg); }
+  100% { -webkit-transform: rotate(360deg); }
+}
+
+@keyframes spin {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}
+
+/* .loader {
+  position:absolute;
+  left:41%;
+  z-index: 1;
+  -webkit-animation: resize 2s linear infinite;
+  animation: resize 2s linear infinite;
+}
+.loader2 {
+  left:55%;
+  position:absolute;
+  z-index: 1;
+  -webkit-animation: resize2 2s linear infinite;
+  animation: resize2 2s linear infinite;
+}
+
+@-webkit-keyframes resize {
+  0% { -webkit-font-size:50px; }
+  50% { -webkit-font-size:10px; }
+  100% { -webkit-font-size:50px; }
+}
+
+@keyframes resize {
+  0% { font-size:50px; }
+  50% { font-size:10px; }
+  100% { font-size:50px; }
+}
+
+@-webkit-keyframes resize2 {
+  0% { -webkit-font-size:10px; }
+  50% { -webkit-font-size:50px; }
+  100% { -webkit-font-size:10px; }
+}
+
+@keyframes resize2 {
+  0% { font-size:10px; }
+  50% { font-size:50px; }
+  100% { font-size:10px; }
+} */
 </style>
   </head>
-
+<body>
+    <div id="loader"></div>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/2.1.3/jquery.min.js"></script>
   <script src="./rita.js"></script>
       <script src="https://cdnjs.cloudflare.com/ajax/libs/p5.js/0.7.1/p5.min.js"></script>
 
 <div class="container">
-<div id="fortune">✨🔮✨</div>
-
+    <!-- <div class="loader">✨</div>
+    <div class="loader2">✨</div> -->
+    <div class="fortune-container">✨🔮✨</div>
+<div class="fortune-container" id="fortune"></div>
 <input type="submit" value="Speak what you would like to know." id="submit">
 </div>
   <script>
@@ -43,12 +110,16 @@ margin-bottom:50px;
     recognition.start();
     console.log("recording");
 
+      $('#loader').fadeIn(10000);
+
     recognition.onresult = event => {
+
       console.log(event.results)
       let speechResult = event.results[0][0].transcript;
       console.log("result: " + speechResult);
 
       generateSentence(speechResult);
+
     }
   }
 
@@ -82,14 +153,17 @@ margin-bottom:50px;
 
     markov.loadText(newSource, 5)
 
-
+      $('#loader').fadeOut();
     var response = markov.generateSentences(1)
+
     speak(response)
 
-    const newTextNode = document.createTextNode(response)
-    const fortune = document.getElementById("fortune")
-    fortune.innerHTML = "✨🔮✨<br>"
-    fortune.appendChild(newTextNode);
+    // const newTextNode = document.createTextNode(response)
+    // const fortune = document.getElementById("fortune")
+    // // fortune.innerHTML = "✨🔮✨<br>"
+    // fortune.appendChild(newTextNode);
+
+    $('#fortune').hide().text(response).fadeIn(1000);
 
   }
 
@@ -116,7 +190,7 @@ margin-bottom:50px;
   	ignorePunctuation: true,
   	wordCount: 20,
   	ignoreStopWords: true,
-  	wordsToIgnore: ["I", "you", "what", "how"]
+  	wordsToIgnore: ["I", "you", "what", "how", "I'm"]
   }
 	
 
@@ -127,6 +201,14 @@ margin-bottom:50px;
  
   }
 
+window.onload = function(){
+  $('#loader').fadeOut();
+  // $('.loader2').fadeOut();
+
+}
+
   </script>
-  <div id="content"></div>
+
+</body>
+
 <html>
