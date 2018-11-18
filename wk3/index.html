@@ -87,7 +87,7 @@ margin-bottom:50px;
     <div id="loader"></div>
   <script src="./jquery-3.3.1.js"></script>
   <script src="./rita.js"></script>
-      <!-- <script src="https://cdnjs.cloudflare.com/ajax/libs/p5.js/0.7.1/p5.min.js"></script> -->
+      <script src="https://cdnjs.cloudflare.com/ajax/libs/p5.js/0.7.1/p5.min.js"></script>
 
 <div class="container">
     <!-- <div class="loader">✨</div>
@@ -97,7 +97,7 @@ margin-bottom:50px;
 <input type="submit" value="Speak what you would like to know." id="submit">
 </div>
   <script>
-  var source1, source2, source3, markov;
+  var source1, source2, source3;
 
   const SpeechRecognition = webkitSpeechRecognition;
   const synth = window.speechSynthesis;
@@ -110,7 +110,7 @@ margin-bottom:50px;
   }
 
   function setup(){
-	markov = new RiMarkov(4);
+  markov = new RiMarkov(4);
 	markov.loadText(source1.join(' '));
 	markov.loadText(source2.join(' '));
 	markov.loadText(source3.join(' '));
