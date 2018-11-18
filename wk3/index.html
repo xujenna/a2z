@@ -103,6 +103,25 @@ margin-bottom:50px;
   const synth = window.speechSynthesis;
 
 
+  function preload(){
+  	source1 = loadStrings("./ggia.txt");
+  	source2 = loadStrings("./horoscope.txt");
+  	source3 = loadStrings("./oprah.txt");
+  }
+
+  function setup(){
+	markov = new RiMarkov(4);
+	markov.loadText(source1.join(' '));
+	markov.loadText(source2.join(' '));
+	markov.loadText(source3.join(' '));
+
+	// var response = markov.generateSentences(1)
+	// speak(response)
+	// $('#content').text(response);
+
+  }
+
+
   const getSpeech = () => {
     const recognition = new SpeechRecognition();
     recognition.lang = "en-US";
@@ -167,23 +186,6 @@ margin-bottom:50px;
 
   }
 
-  function preload(){
-  	source1 = loadStrings("./ggia.txt");
-  	source2 = loadStrings("./horoscope.txt");
-  	source3 = loadStrings("./oprah.txt");
-  }
-
-  function setup(){
-	markov = new RiMarkov(4);
-	markov.loadText(source1.join(' '));
-	markov.loadText(source2.join(' '));
-	markov.loadText(source3.join(' '));
-
-	// var response = markov.generateSentences(1)
-	// speak(response)
-	// $('#content').text(response);
-
-  }
 
   var args = {
   	ignoreCase: true,
