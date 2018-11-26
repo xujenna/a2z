@@ -49,6 +49,9 @@ class Word2Vec {
 let word2vec = new Word2Vec('data/wordvecs10000.json', modelLoaded);
 const SpeechRecognition = webkitSpeechRecognition;
 const synth = window.speechSynthesis;
+playerOneScore = 0;
+
+
 
 const speak = (textInput) => {
   if(synth.speaking){
@@ -59,106 +62,77 @@ const speak = (textInput) => {
   synth.speak(utterThis)
 }
 
-playerOneScore = 0;
 
 function modelLoaded() {
-  document.getElementById('status').innerHTML='Model Loaded';
-  start();
+  document.getElementById('start-button').innerHTML= "<button onclick='start();'>Start Game</button>";
 }
 
 // var randomProperty = function (obj) {
 function randomProperty(obj) {
-  console.log("starter word")
   var keys = Object.keys(obj)
 
   return keys[ keys.length * Math.random() << 0];
 };
 
 async function start() {
-  console.log("start")
+  document.querySelector('#start-button > button').disabled = true;
   playerOneScore = 0;
 
-  // let starter = randomProperty(word2vec.model);
-
-  // speak(starter);
-  // newTurn(starter);
   let starter = await randomProperty(word2vec.model)
   
+
+  document.getElementById('currentWord').textContent = starter;
+
   speak(starter);
   newTurn(starter);
-
-  // getCoordinates(starter);
-  // playerOneScore = 0;
-
-  // newTurn(starter);
-  // let a = document.getElementById('start').value;
-  // let b = document.getElementById('end').value;
-
-  
-  // distance(a, b).then(result => {
-  //   document.getElementById('between').innerHTML = 'distance: ' + result;
-  // });
 }
 
 
-function getResponse() {
-  console.log("get response")
+function newTurn(word) {
+  let count = 0;
+  let counter = setInterval(function() {
+    count += 1;
+    document.getElementById('countDown').textContent = 7-count;
+    if(count >= 7){
+      clearInterval(counter);
+      document.getElementById('countDown').textContent = "Game Over";
+      document.querySelector('#start-button > button').disabled = false;
+    }
+  }, 1000);
+
   const recognition = new SpeechRecognition();
   recognition.lang = 'en-US';
   recognition.start();
-  console.log('started rec');
 
   recognition.onresult = event => {
-    let result = event.results[0][0].transcript;
-    console.log(result)
-    return result;
+    let timePenalty = Math.pow(count, 4) * 10;
+    console.log("time penalty: " + timePenalty)
+    clearInterval(counter);
+
+    let newWord = event.results[0][0].transcript;
+    console.log(newWord)
+    document.getElementById('currentWord').textContent = newWord;
+
+    let newScore = Math.round(Math.pow((distance(word, newWord)*10),3)) - timePenalty;
+    console.log(newScore)
+    document.getElementById('lastRoundScore').textContent = newScore + timePenalty;
+    document.getElementById('lastRoundTimePenalty').textContent = timePenalty;
+
+    playerOneScore += newScore;
+    document.getElementById('playerOneScore').textContent = playerOneScore;
+
+    newTurn(newWord)
   }
 
   recognition.onend = () => {
-		console.log("it is over");
+		console.log("ended recording");
 		recognition.stop();
   }
   
   recognition.onerror = event => {
-		console.log("something went wrong: " + event.error);
+		console.log("error: " + event.error);
   }
 }
-
-function newTurn(word) {
-  document.getElementById('currentWord').textContent = word;
-
-  console.log("new turn")
-  // playerOneScore = 0;
-  // playerTwoScore = 0;
-  // playerOneWord;
-  // playerTwoWord;
-
-// let newWord = await getResponse(word);
-getResponse().then(function(result) {
-  document.getElementById('currentWord').textContent = result;
-  return distance(word, result);
-  // let newWord = result;
-})
-.then(function(distance){
-  let newScore = distance * 100;
-  playerOneScore += newScore;
-  document.getElementById('playerOneScore').textContent = playerOneScore;
-})
-
-// let newScore = await distance(word, newWord) * 100;
-// playerOneScore += newScore;
-// document.getElementById('playerOneScore').textContent = playerOneScore;
-
-// newTurn(newWord)
-
-}
- 
-  // document.getElementById('currentWord').textContent = newWord;
-  // playerOneScore += distance * 100;
-  // document.getElementById('playerOneScore').textContent = playerOneScore;
-  // newTurn(newWord)
-
-
 
 function getCoordinates(word) {
   // console.log(word2vec.model[word])
@@ -168,10 +142,7 @@ function getCoordinates(word) {
   //   console.log(result)
   //   map(result)
   // })
-
-  
   tsneOpt.compute().then(() => {
-    console.log("hello");
     const coordinates = tsneOpt.coordinates();
     coordinates.print();
     // let coordinates = tsneOpt.coordsArray().then(result=>{
@@ -182,14 +153,8 @@ function getCoordinates(word) {
   })
 }
 
-function map(coordinates){
-  console.log(coordinates)
-  console.log("goodbye")
-}
-
-
 function distance(a, b) {
-  console.log("distance")
   let result = tf.util.distSquared(word2vec.model[a].dataSync(), word2vec.model[b].dataSync())
   return result;
 }
+
