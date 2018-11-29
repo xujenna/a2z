@@ -2,21 +2,118 @@
 <html>
 
 <head>
+
+  <style type="text/css">
+
+  body{
+    text-align: center;
+    font-family: monospace;
+  }
+
+  #start-button > button{
+    width:300px;
+    height:300px;
+    background-color: #ff3232;
+    border-radius: 300px;
+    font-size: 25px;
+    font-family: monospace;
+    font-weight:bold;
+    color: white;
+    padding: 20px;
+    cursor:pointer;
+    text-align: center;
+    box-shadow: 0 20px #b20000;
+    border: none;
+    position:fixed;
+  }
+
+  #start-button > button:hover {
+    background-color: red;
+  }
+  #start-button > button:active {
+    background-color: red;
+    box-shadow: 0 10px #b20000;
+    transform: translateY(10px)
+  }
+
+  #restart-button{
+    width:200px;
+    height:100px;
+    border-radius: 100px;
+    background-color: #ff3232;
+    display:none;
+    font-size: 20px;
+    font-family: monospace;
+    font-weight:bold;
+    color: white;
+    padding: 20px;
+    cursor:pointer;
+    text-align: center;
+    box-shadow: 0 20px #b20000;
+    border: none;
+    display:none;
+  }
+
+  #restart-button:hover{
+    background-color: red;
+  }
+
+  #restart-button:active{
+    background-color: red;
+    box-shadow: 0 10px #b20000;
+    transform: translateY(10px)
+  }
+
+  #scoring {
+    display: none;
+    position:fixed;
+    top:100px;
+  }
+
+  #lastRoundPoints{
+    color:blue;
+  }
+  #lastRoundTimePenalty{
+    color: red;
+  }
+
+  .embeddingText {
+    font-family:monospace;
+    font-size:14px;
+    color:black;
+  }
+
+  .newEmbeddingText {
+    font-family:monospace;
+    font-size:24px;
+    color:red;
+  }
+  /* #tsneCanvas{
+    width: 100%;
+    height: 100%;
+  } */
+  </style>
+
+
   <meta charset="UTF-8">
   <meta http-equiv="X-UA-Compatible" content="IE=edge">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>word2vec</title>
   <script src="https://cdn.jsdelivr.net/npm/@tensorflow/tfjs@0.13.3/dist/tf.min.js"> </script>
   <script src="https://cdn.jsdelivr.net/npm/@tensorflow/tfjs-tsne"></script>
+  <script src="https://d3js.org/d3.v4.min.js"></script>
 
 
 </head>
 
 <body>
-  <div id="start-button">Loading Model...</div>
-  <div>
-    <p>Current Word:</p>
-    <h1 id="currentWord"></h1>
+  <div id="start-button">Loading word2vec Model...</div>
+
+
+  <div id="tsneSVG"></div>
+  <div id="scoring">
+      <!-- <p>Current Word:</p> -->
+    <h1 id="tryAgain"></h1>
 
     <p><br></p>
     <p>Time Left:</p>
@@ -25,9 +122,9 @@
 
     <p><br></p>
 
-    <p>Last Round Score:</p>
-    <h2 id="lastRoundScore"></h2>
-    <p>Points for Response:</p>
+    <!-- <p>Last Round Score:</p>
+    <h2 id="lastRoundScore"></h2> -->
+    <p>Last Round Points:</p>
     <h3 id="lastRoundPoints"></h3>
     <p>Time Penalty:</p>
     <h3 id="lastRoundTimePenalty"></h3>
@@ -36,7 +133,10 @@
     <p>Player One Score:</p>
     <h2 id="playerOneScore"></h2>
 
+    <button id="restart-button" onclick="start();">Play Again</button>
   </div>
+
+
   <script src="sketch.js"></script>
 
 
