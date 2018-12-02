@@ -8,6 +8,7 @@
   body{
     text-align: center;
     font-family: monospace;
+    margin:0;
   }
 
   #start-button > button{
@@ -24,7 +25,6 @@
     text-align: center;
     box-shadow: 0 20px #b20000;
     border: none;
-    position:fixed;
   }
 
   #start-button > button:hover {
@@ -37,21 +37,22 @@
   }
 
   #restart-button{
-    width:200px;
-    height:100px;
-    border-radius: 100px;
+    width:160px;
+    height:60px;
+    border-radius: 60px;
     background-color: #ff3232;
     display:none;
-    font-size: 20px;
+    font-size: 16px;
     font-family: monospace;
     font-weight:bold;
     color: white;
-    padding: 20px;
+    padding: 10px;
     cursor:pointer;
     text-align: center;
-    box-shadow: 0 20px #b20000;
+    box-shadow: 0 10px #b20000;
     border: none;
     display:none;
+    margin-top:20px;
   }
 
   #restart-button:hover{
@@ -60,16 +61,38 @@
 
   #restart-button:active{
     background-color: red;
-    box-shadow: 0 10px #b20000;
-    transform: translateY(10px)
+    box-shadow: 0 5px #b20000;
+    transform: translateY(5px)
   }
 
   #scoring {
     display: none;
     position:fixed;
     top:100px;
+    /* width:180px; */
+    left:75px;
   }
 
+  #scoring p {
+    font-family: roboto;
+    font-size: 11px;
+    text-transform:uppercase;
+    /* border-top: 1px solid grey;
+    padding-top: 20px; */
+  }
+  #timer{
+    width:180px;
+    border: 2px solid black;
+    /* border-radius: 10px; */
+    color:black;
+    padding:10px;
+    margin:20px;
+  }
+
+  #timer > h1{
+    font-size:30px;
+    margin-top:0px;
+  }
   #lastRoundPoints{
     color:blue;
   }
@@ -79,19 +102,139 @@
 
   .embeddingText {
     font-family:monospace;
-    font-size:14px;
-    color:black;
+    font-size:13px;
+    fill:black;
   }
 
-  .newEmbeddingText {
+  #newEmbeddingText {
     font-family:monospace;
-    font-size:24px;
+    font-size:26px;
+    font-weight:bold;
+  }
+
+  .player1text{
+    fill: fuchsia;
+  }
+
+  .player2text{
+    fill:springgreen;
+  }
+  .player0text{
+    fill:black;
+  }
+  #tryAgain{
     color:red;
   }
-  /* #tsneCanvas{
-    width: 100%;
-    height: 100%;
-  } */
+
+  .plotScore{
+    font-family:monospace;
+    font-size:20px;
+    /* font-weight:bold; */
+  }
+
+  .player1line{
+    stroke: fuchsia;
+    stroke-width: 1.5;
+    opacity: 0.5;
+    stroke-dasharray: 3;
+  }
+  .player2line{
+    stroke: springgreen;
+    stroke-width: 1.5;
+    opacity: 0.5;
+    stroke-dasharray: 3;
+  }
+
+  #rules{
+    margin:auto;
+    width:450px;
+    margin-bottom:50px;
+    font-size:20px;
+  }
+  #tsneSVG{
+    width:100%;
+    text-align:right;
+  }
+  .title{
+    text-transform: uppercase;
+    font-weight:bold;
+    padding-bottom:15px;
+    margin-bottom:8px;
+    margin-top:2px;
+    letter-spacing: 4px;
+  }
+
+/*
+  #playerOneStats > .title{
+    border-bottom: 2px solid fuchsia;
+    color:fuchsia;
+  }
+  #playerTwoStats > .title{
+    border-bottom: 2px solid springgreen;
+    color:springgreen;
+  }
+  .playerStats{
+    width:160px;
+    padding:20px;
+    margin:auto;
+    margin-top:20px;
+    text-align:left;
+  }
+
+  .playerStats p{
+    width: 50px;
+    display: inline-block;
+    padding-right:20px;
+    font-weight: bold;
+    letter-spacing: 1px;
+    margin-right: 4px;
+  }
+  .playerStats h2{
+    display: inline-block;
+    vertical-align: middle;
+  }
+  #playerOneStats{
+    border: 2px solid fuchsia;
+    color: fuchsia;
+  }
+  #playerOneStats p {
+    border-right: 2px solid fuchsia;
+  }
+  #playerTwoStats{
+    border: 2px solid springgreen;
+    color: springgreen;
+  }
+  #playerTwoStats p {
+    border-right: 2px solid springgreen;
+  }
+  */
+.playerBars{
+  width: 60px;
+  height: 100px;
+  bottom: 0px;
+  position: fixed;
+  left: 135px;
+}
+
+#playerOneBar{
+  background-color: fuchsia;
+}
+#playerOneBar{
+  background-color: springgreen;
+}
+
+  #turnInfo{
+    width:180px;
+    padding:10px;
+    margin:auto;
+    margin-top:10px;
+  }
+
+  #hiScore{
+    margin:auto;
+    position: fixed;
+    display:none;
+  }
   </style>
 
 
@@ -102,38 +245,61 @@
   <script src="https://cdn.jsdelivr.net/npm/@tensorflow/tfjs@0.13.3/dist/tf.min.js"> </script>
   <script src="https://cdn.jsdelivr.net/npm/@tensorflow/tfjs-tsne"></script>
   <script src="https://d3js.org/d3.v4.min.js"></script>
-
+  <script src="https://www.gstatic.com/firebasejs/5.6.0/firebase.js"></script>
 
 </head>
 
 <body>
-  <div id="start-button">Loading word2vec Model...</div>
+  <div id="rules">
+  <p><h2>Objectives:</h2></p>
+  <p>The computer starts the game off with a random word. Two players then take turns saying words that are as unrelated to the last played word as possible, as quickly as possible.</p>
+</div>
 
+<div id="start-button">Loading word2vec Model...</div>
 
-  <div id="tsneSVG"></div>
-  <div id="scoring">
-      <!-- <p>Current Word:</p> -->
-    <h1 id="tryAgain"></h1>
+<div id="tsneSVG"></div>
+<div id="scoring">
+    <!-- <p>Current Word:</p> -->
+<div id="turnInfo">
+  <h1 id="player"></h1>
+  <h1 id="tryAgain"></h1>
+</div>
 
-    <p><br></p>
-    <p>Time Left:</p>
-    <h2 id="countDown"></h2>
-    <p><br></p>
+<div id="timer">
+  <p>Time Left:</p>
+  <h1 id="countDown"></h1>
+</div>
 
-    <p><br></p>
+<div class="playerBars" id="playerOneBar"></div>
+<div class="playerBars" id="playerTwoBar"></div>
 
-    <!-- <p>Last Round Score:</p>
-    <h2 id="lastRoundScore"></h2> -->
-    <p>Last Round Points:</p>
-    <h3 id="lastRoundPoints"></h3>
-    <p>Time Penalty:</p>
-    <h3 id="lastRoundTimePenalty"></h3>
-
-
-    <p>Player One Score:</p>
+  <!-- <div class="playerStats" id="playerOneStats">
+    <h3 class="title">Player One</h3>
+    <p>Total Distance:</p>
+    <h2 id="playerOnePoints"></h2>
+    <p>Total Time Penalty:</p>
+    <h2 id="playerOneTimePenalty"></h2>
+    <p>Overall Score:</p>
     <h2 id="playerOneScore"></h2>
+  </div>
+
+  <div class="playerStats" id="playerTwoStats">
+    <h3 class="title">Player Two</h3>
+    <p>Total Distance:</p>
+    <h2 id="playerTwoPoints"></h2>
+    <p>Total Time Penalty:</p>
+    <h2 id="playerTwoTimePenalty"></h2>
+    <p>Overall Score:</p>
+    <h2 id="playerTwoScore"></h2>
+  </div> -->
 
     <button id="restart-button" onclick="start();">Play Again</button>
+  </div>
+
+  <div id="hiScore">
+    <h1>High Score!</h1>
+    <input type="text" id="name" name="name" value="name" size="40" required>
+    
   </div>
 
 

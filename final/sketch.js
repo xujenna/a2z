@@ -46,36 +46,51 @@ class Word2Vec {
 };
 
 
+  // Initialize Firebase
+  var config = {
+    apiKey: "AIzaSyAGKvWESjIqkNOXic9P-SCCrcFjFn3tmKM",
+    authDomain: "word2vecgame.firebaseapp.com",
+    databaseURL: "https://word2vecgame.firebaseio.com",
+    projectId: "word2vecgame",
+    storageBucket: "word2vecgame.appspot.com",
+    messagingSenderId: "254456730638"
+  };
+  firebase.initializeApp(config);
 
 
+var database = firebase.database();
 let word2vec = new Word2Vec('data/wordvecs10000.json', modelLoaded);
 const SpeechRecognition = webkitSpeechRecognition;
 const synth = window.speechSynthesis;
 let playerOneScore = 0;
+let playerOnePoints = 0;
+let playerOneTimePenalty = 0;
+let playerTwoScore = 0;
+let playerTwoPoints = 0;
+let playerTwoTimePenalty = 0;
 let data;
 let data_keys;
 let counter;
 let tsneOpt;
 let tsneCoordinates;
+let playerNum = 0;
+let body = document.querySelector("body");
+let tryAgain = false;
+
 
 let plotSVG = d3.select("#tsneSVG")
 .append("svg:svg")
-  .attr("width",1300)
-  .attr("height",800);
+  .attr("width","85%")
+  .attr("height","98%");
 
-// let canvas = document.getElementById("tsneCanvas");
-// let ctx = canvas.getContext("2d");
-// ctx.font = "18px Arial";
-// ctx.fillText("hello",100,300);
-// ctx.fillStyle = "#FF0000";
 
-const speak = (textInput) => {
+async function speak(textInput) {
   if(synth.speaking){
     console.error('already speaking')
     return;
   }
   let utterThis = new SpeechSynthesisUtterance(textInput)
-  synth.speak(utterThis)
+  await synth.speak(utterThis)
 }
 
 
@@ -102,16 +117,21 @@ async function tsnefy() {
 // };
 
 function start() {
+  playerNum = 0;
+  tryAgain = false;
+  prev_xCoord = 0;
+  prev_yCoord = 0;
+  playerOneScore = 0;
+  playerTwoScore = 0;
+
   // document.querySelector('#start-button > button').disabled = true;
+  document.getElementById('restart-button').style.display= "none";
   document.querySelector('#start-button > button').style.display = "none";
+  document.getElementById('rules').style.display= "none";
   document.querySelector('#scoring').style.display = "block";
-  // document.getElementById('currentWord').textContent = "";
-  document.getElementById('lastRoundPoints').textContent = 0;
-  document.getElementById('lastRoundTimePenalty').textContent = 0;
-  document.getElementById('playerOneScore').textContent = 0;
-  // ctx.clearRect(0,0,canvas.width, canvas.height);
-  // ctx.beginPath();
-  // plotSVG.parentNode.replaceChild(plotSVG.cloneNode(false), plotSVG);
+  let scores = document.querySelectorAll(".playerStates > h2");
+  scores.forEach(function(d){d.textContent=0});
+
   plotSVG.remove();
   plotSVG = d3.select("#tsneSVG")
   .append("svg:svg")
@@ -119,22 +139,39 @@ function start() {
     .attr("height",800);
 
   // document.querySelector('#tsneCanvas').style.display = "block";
-  playerOneScore = 0;
+
   // let starter = randomProperty(word2vec.model)
   let starter = data_keys[data_keys.length * Math.random() << 0]
 
   // document.getElementById('currentWord').textContent = starter;
   getCoordinates(starter);
   speak(starter);
-  newTurn(starter);
+  setTimeout(function(){newTurn(starter);}, 800);
 }
 
 
 function newTurn(word) {
+  if(tryAgain==true){
+    tryAgain = false;
+  }
+  else{
+    if(playerNum == 0 || playerNum == 2){
+      playerNum = 1;
+      body.style.border = "25px solid fuchsia";
+    }
+    else{
+      playerNum = 2;
+      body.style.border = "25px solid springgreen";
+    }
+  }
+  console.log("newTurn PlayerNum: "+ playerNum)
+
+  document.getElementById('player').textContent = "Player " + playerNum;
+
   let count = 0;
   counter = setInterval(function() {
     count += 1;
-    document.getElementById('countDown').textContent = 7-count;
+    document.getElementById('countDown').textContent = "00:0" + (7-count);
     if(count >= 6){
       gameOver();
     }
@@ -145,7 +182,9 @@ function newTurn(word) {
   recognition.start();
 
   recognition.onresult = event => {
-    let timePenalty = Math.pow(count, 4) * 10;
+    document.getElementById('tryAgain').textContent = "";
+
+    let timePenalty = Math.pow(count, 4) * 20;
     console.log("time penalty: " + timePenalty)
     clearInterval(counter);
 
@@ -155,33 +194,47 @@ function newTurn(word) {
     // document.getElementById('currentWord').textContent = newWord;
 
     try {
-      let wordDistance = distance(word, newWord);
-      let newScore = Math.round(Math.pow((wordDistance*10),3)) - timePenalty;
+      // document.getElementById('newEmbeddingText').removeAttribute("id");
+
+      let score = Math.round(Math.pow((distance(word, newWord)*10),3));
+      let newScore = score - timePenalty;
       console.log(newScore)
       // document.getElementById('lastRoundScore').textContent = newScore;
-      document.getElementById('lastRoundPoints').textContent = newScore + timePenalty;
-      document.getElementById('lastRoundTimePenalty').textContent = timePenalty;
-      getCoordinates(newWord);
+      // document.getElementById('lastRoundPoints').textContent = newScore + timePenalty;
+      // document.getElementById('lastRoundTimePenalty').textContent = timePenalty;
+      getCoordinates(newWord, score, timePenalty, playerNum);
 
-      playerOneScore += newScore;
-      document.getElementById('playerOneScore').textContent = playerOneScore;
+      if(playerNum == 1){
+        playerOneScore += newScore;
+        playerOnePoints += score;
+        playerOneTimePenalty += timePenalty;
+        document.getElementById('playerOneScore').textContent = playerOneScore;
+        document.getElementById('playerOnePoints').textContent = playerOnePoints;
+        document.getElementById('playerOneTimePenalty').textContent = playerOneTimePenalty;
+      }
+      else{
+        playerTwoScore += newScore;
+        playerTwoPoints += score;
+        playerTwoTimePenalty += timePenalty;
+        document.getElementById('playerTwoScore').textContent = playerTwoScore;
+        document.getElementById('playerTwoPoints').textContent = playerTwoPoints;
+        document.getElementById('playerTwoTimePenalty').textContent = playerTwoTimePenalty;
+      }
 
       newTurn(newWord)
-
     }
     catch(err){
       console.log("error: " + err)
-      document.getElementById('tryAgain').textContent = "Try again (" + newWord + " not in model)";
-      newTurn(word)
+      document.getElementById('tryAgain').textContent = "Try again ('" + newWord + "' not in model)";
+      speak("Try again");
+      tryAgain = true;
+      setTimeout(function(){newTurn(word)}, 1500);
     }
-
   }
-
   recognition.onend = () => {
 		console.log("ended recording");
 		recognition.stop();
   }
-  
   recognition.onerror = event => {
 		console.log("error: " + event.error);
   }
@@ -192,15 +245,23 @@ const scale = (num, in_min, in_max, out_min, out_max) => {
   return (num - in_min) * (out_max - out_min) / (in_max - in_min) + out_min;
 }
 
-let prev_xCoord;
-let prev_yCoord;
+let prev_xCoord = 0;
+let prev_yCoord = 0;
 
 
-async function getCoordinates(word) {
+async function getCoordinates(word,score,timePenalty,playerNum) {
+  console.log("getCoordinates playerNum: " + playerNum)
   let wordIndex = data_keys.indexOf(word);
   console.log(wordIndex);
-  words = document.querySelectorAll("text");
-  words.forEach(function(d){d.classList.replace("newEmbeddingText", "embeddingText")})
+  // words = document.querySelectorAll("text");
+  // words.forEach(function(d){d.classList.replace("newEmbeddingText", "embeddingText")})
+  if(playerNum > 0){
+    document.getElementById('newEmbeddingText').removeAttribute("id");
+  }
+  let plotScores = document.querySelectorAll(".plotScore");
+  if(plotScores.length > 0){
+    plotScores.forEach(function(d){d.remove();})
+  }
 
   // let wordIndex = data.indexOf(Array.prototype.slice.call(word2vec.model[word].dataSync()));
   await tsneCoordinates.then(function(result) {
@@ -209,33 +270,59 @@ async function getCoordinates(word) {
     let yCoord = scale(result[wordIndex][1], 0, 1, 0, 800);
     console.log(xCoord)
     console.log(yCoord)
-    // ctx.font = "18px monospace";
-    // ctx.fillText(word,xCoord,yCoord);
-    // ctx.fillStyle = "#FF0000";
+
     plotSVG.append("text")
       .text(word)
-      .attr("x", xCoord)
-      .attr("y", yCoord)
-      .attr("class", "newEmbeddingText");
+      .attr("x", xCoord + 6)
+      .attr("y", yCoord + 3)
+      .attr("id", "newEmbeddingText")
+      .attr("class", "player" + playerNum + "text");
+    plotSVG.append("circle")
+      .attr("cx", xCoord)
+      .attr("cy", yCoord)
+      .attr("r", 3)
+      .attr("fill", "silver")
+      .attr("class", "player" + playerNum + "text");
 
-    try{
-      // ctx.moveTo(prev_xCoord,prev_yCoord);
-      // ctx.lineTo(xCoord,yCoord);
-      // ctx.stroke();
+    if(prev_xCoord !== 0 && prev_yCoord !== 0){
+      // let points;
+      // let scoreColor;
+
+      // if(newScore >= 0){
+      //   points = "+" + score;
+      //   scoreColor = "blue";
+      // }
+      // else{
+      //   points = score;
+      //   scoreColor = "red";
+      // }
+      plotSVG.append("text")
+        .text("+" + score + " distance")
+        .attr("x", xCoord + 5)
+        .attr("y", yCoord + 30)
+        .attr("fill", "blue")
+        .attr("class", "plotScore");
+      plotSVG.append("text")
+        .text("-" + timePenalty + " time")
+        .attr("x", xCoord + 5)
+        .attr("y", yCoord + 52)
+        .attr("fill", "red")
+        .attr("class", "plotScore");
+
       plotSVG.append("line")
         .attr("x1", prev_xCoord)
         .attr("y1", prev_yCoord)
         .attr("x2", xCoord)
         .attr("y2", yCoord)
-        .attr("stroke", "grey")
+        .attr("class", "player" + playerNum + "line")
+        .attr("stroke", "silver")
         .attr("stroke-width", 1.5)
         .attr("opacity", 0.3)
-        .attr("stroke-dasharray", 3)
+        .attr("stroke-dasharray", 3);
     }
-    finally{
-      prev_xCoord = xCoord;
-      prev_yCoord = yCoord;
-    }
+
+    prev_xCoord = xCoord;
+    prev_yCoord = yCoord;
   });
 }
 
@@ -247,8 +334,43 @@ function distance(a, b) {
 function gameOver(){
   clearInterval(counter);
   document.getElementById('countDown').textContent = "Game Over";
+  if(playerOneScore>playerTwoScore){
+    document.getElementById('player').textContent = "Player 1 Wins!";
+    document.getElementById('player').style.color = "fuchsia";
+    body.style.border = "25px solid fuchsia";
+
+  }
+  else if (playerTwoScore>playerOneScore){
+    document.getElementById('player').textContent = "Player 2 Wins!";
+    document.getElementById('player').style.color = "springgreen";
+    body.style.border = "25px solid springgreen";
+  }
+  else if (playerOneScore==playerTwoScore){
+    document.getElementById('player').textContent = "Draw!"
+    body.style.border = "25px solid black";
+  }
   // document.querySelector('#start-button > button').disabled = false;
   // document.querySelector('#start-button > button').style.display = "block";
   // document.querySelector('#start-button > button').textContent = "Restart Game";
   document.getElementById('restart-button').style.display= "inline-block";
+
+}
+
+
+function highScore(playerNum, totalScore, totalPoints, totalTimePenalty){
+
+  document.getElementById("hiScore").style.display = "block";
+
+  let time = Date.now();
+  let key = "/scores/" + time;
+  let newGameEntry = {};
+
+  newGameEntry["time"] = Date.now();
+  newGameEntry["playerName"] = Date.now();
+  newGameEntry["totalScore"] = totalScore;
+  newGameEntry["totalPoints"] = totalPoints;
+  newGameEntry["totalTimePenalty"] = totalTimePenalty;
+
+  database.ref(key).set(newobject);
+
 }
