@@ -9,6 +9,7 @@
     text-align: center;
     font-family: monospace;
     margin:0;
+    background-color: whitesmoke;
   }
 
   #start-button > button{
@@ -40,7 +41,8 @@
     width:160px;
     height:60px;
     border-radius: 60px;
-    background-color: #ff3232;
+    border: 2px solid white;
+    background-color: transparent;
     display:none;
     font-size: 16px;
     font-family: monospace;
@@ -49,9 +51,8 @@
     padding: 10px;
     cursor:pointer;
     text-align: center;
-    box-shadow: 0 10px #b20000;
+    /* box-shadow: 0 10px #b20000; */
     border: none;
-    display:none;
     margin-top:20px;
   }
 
@@ -65,33 +66,50 @@
     transform: translateY(5px)
   }
 
-  #scoring {
-    display: none;
+  #restartButtonContainer{
+    display:none;
+
+    /* width:200px;
+    height:100px;
+    text-align:center;
+    vertical-align: middle;
     position:fixed;
-    top:100px;
-    /* width:180px; */
-    left:75px;
+    top:50%;
+    left: 50%;
+    margin-top:-50px;
+    margin-left: -100px; */
   }
 
-  #scoring p {
-    font-family: roboto;
-    font-size: 11px;
-    text-transform:uppercase;
-    /* border-top: 1px solid grey;
-    padding-top: 20px; */
-  }
-  #timer{
-    width:180px;
-    border: 2px solid black;
-    /* border-radius: 10px; */
-    color:black;
+  #turnBar {
+    display: none;
+    color:white;
+    position:fixed;
+    top:0px;
+    width:100%;
+    height:50px;
     padding:10px;
-    margin:20px;
+    background-color: grey;
+    /* width:180px; */
+  }
+
+#turnBar > div {
+  display:inline-block;
+  margin-left:100px;
+}
+
+  #timer{
+    /* display:inline-block;
+    margin-left:50px; */
+    /* width:180px; */
+    /* border: 2px solid black; */
+    /* border-radius: 10px; */
+    /* color:black; */
+    /* padding:10px; */
+    /* margin:20px; */
   }
 
   #timer > h1{
     font-size:30px;
-    margin-top:0px;
   }
   #lastRoundPoints{
     color:blue;
@@ -103,28 +121,26 @@
   .embeddingText {
     font-family:monospace;
     font-size:13px;
-    fill:black;
+    font-weight:bold;
+    letter-spacing:0.75px;
   }
 
   #newEmbeddingText {
     font-family:monospace;
     font-size:26px;
-    font-weight:bold;
   }
 
   .player1text{
-    fill: fuchsia;
+    fill: orangered;
   }
 
   .player2text{
-    fill:springgreen;
+    fill:dodgerblue;
   }
   .player0text{
-    fill:black;
+    fill:grey;
   }
-  #tryAgain{
-    color:red;
-  }
+ 
 
   .plotScore{
     font-family:monospace;
@@ -133,15 +149,15 @@
   }
 
   .player1line{
-    stroke: fuchsia;
-    stroke-width: 1.5;
-    opacity: 0.5;
+    stroke: orangered;
+    stroke-width: 3;
+    opacity: 0.6;
     stroke-dasharray: 3;
   }
   .player2line{
-    stroke: springgreen;
-    stroke-width: 1.5;
-    opacity: 0.5;
+    stroke: dodgerblue;
+    stroke-width: 3;
+    opacity: 0.6;
     stroke-dasharray: 3;
   }
 
@@ -153,7 +169,8 @@
   }
   #tsneSVG{
     width:100%;
-    text-align:right;
+    padding-top:70px;
+    /* text-align:right; */
   }
   .title{
     text-transform: uppercase;
@@ -164,70 +181,84 @@
     letter-spacing: 4px;
   }
 
-/*
+
   #playerOneStats > .title{
-    border-bottom: 2px solid fuchsia;
-    color:fuchsia;
+    border-bottom: 2px solid orangered;
+    color:orangered;
   }
   #playerTwoStats > .title{
-    border-bottom: 2px solid springgreen;
-    color:springgreen;
+    border-bottom: 2px solid dodgerblue;
+    color:dodgerblue;
   }
   .playerStats{
     width:160px;
-    padding:20px;
+    padding:25px;
     margin:auto;
     margin-top:20px;
     text-align:left;
+    display:none;
+    position:fixed;
+    top:0px;
+    box-shadow: 5px 5px rgba(128,128,128, 0.5);
+    background-color: white;
   }
 
   .playerStats p{
+    font-family: roboto;
+    font-size: 11px;
+    text-transform:uppercase;
     width: 50px;
     display: inline-block;
     padding-right:20px;
     font-weight: bold;
     letter-spacing: 1px;
-    margin-right: 4px;
+    margin-right: 6px;
   }
   .playerStats h2{
     display: inline-block;
     vertical-align: middle;
+    margin-top: 12px;
+    margin-bottom: 12px;
+    font-size:24px;
   }
   #playerOneStats{
-    border: 2px solid fuchsia;
-    color: fuchsia;
+    border: 2px solid orangered;
+    color: orangered;
+    left:60px;
   }
   #playerOneStats p {
-    border-right: 2px solid fuchsia;
+    /* border-right: 2px solid orangered; */
   }
   #playerTwoStats{
-    border: 2px solid springgreen;
-    color: springgreen;
+    border: 2px solid dodgerblue;
+    color: dodgerblue;
+    right:65px;
   }
   #playerTwoStats p {
-    border-right: 2px solid springgreen;
+    /* border-right: 2px solid dodgerblue; */
   }
-  */
+ 
 .playerBars{
   width: 60px;
-  height: 100px;
+  /* height: 100px; */
   bottom: 0px;
   position: fixed;
-  left: 135px;
 }
 
 #playerOneBar{
-  background-color: fuchsia;
+  background-color: orangered;
 }
-#playerOneBar{
-  background-color: springgreen;
+#playerTwoBar{
+  background-color: dodgerblue;
+  right:0px;
 }
 
   #turnInfo{
-    width:180px;
-    padding:10px;
-    margin:auto;
-    margin-top:10px;
+    /* width:180px; */
+    /* padding:10px; */
+    /* margin:auto;
+    display: inline-block; */
+    /* margin-top:10px; */
   }
 
   #hiScore{
@@ -258,26 +289,33 @@
 <div id="start-button">Loading word2vec Model...</div>
 
 <div id="tsneSVG"></div>
-<div id="scoring">
+
+
+<div id="turnBar">
     <!-- <p>Current Word:</p> -->
-<div id="turnInfo">
-  <h1 id="player"></h1>
-  <h1 id="tryAgain"></h1>
+  <div id="playerContainer"><h1 id="player"></h1></div>
+
+  <div id="timer">
+      <h1 id="countDown"></h1>
+    </div>
+
+  <div id="error"><h1 id="tryAgain"></h1></div>
+
+  <div id="restartButtonContainer">
+      <button id="restart-button" onclick="start();">Play Again</button>
+    </div>
+
 </div>
 
-<div id="timer">
-  <p>Time Left:</p>
-  <h1 id="countDown"></h1>
-</div>
 
 <div class="playerBars" id="playerOneBar"></div>
 <div class="playerBars" id="playerTwoBar"></div>
 
-  <!-- <div class="playerStats" id="playerOneStats">
+  <div class="playerStats" id="playerOneStats">
     <h3 class="title">Player One</h3>
-    <p>Total Distance:</p>
+    <p>Distance:</p>
     <h2 id="playerOnePoints"></h2>
-    <p>Total Time Penalty:</p>
+    <p>Time Penalty:</p>
     <h2 id="playerOneTimePenalty"></h2>
     <p>Overall Score:</p>
     <h2 id="playerOneScore"></h2>
@@ -285,16 +323,14 @@
 
   <div class="playerStats" id="playerTwoStats">
     <h3 class="title">Player Two</h3>
-    <p>Total Distance:</p>
+    <p>Distance:</p>
     <h2 id="playerTwoPoints"></h2>
-    <p>Total Time Penalty:</p>
+    <p>Time Penalty:</p>
     <h2 id="playerTwoTimePenalty"></h2>
     <p>Overall Score:</p>
     <h2 id="playerTwoScore"></h2>
-  </div> -->
-
-    <button id="restart-button" onclick="start();">Play Again</button>
   </div>
+
 
   <div id="hiScore">
     <h1>High Score!</h1>
