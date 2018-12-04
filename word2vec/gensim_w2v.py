@@ -20,11 +20,13 @@ nltk.download('punkt')
 import gensim.models.word2vec as w2v
 import numpy as np
 
+source_text = ""
 
-source_text = u""
-with codecs.open("../scripts/call_me_by_your_name_script.txt","r","utf-8") as raw:
-    source_text += raw.read()
-
+with open("hm_only.txt", "r") as f:
+    for line in f:
+        source_text += line
+        source_text += " "
+    
 # using nltk(natural language toolkit)
 tokenizer = nltk.data.load("tokenizers/punkt/english.pickle")
 raw_sentences = tokenizer.tokenize(source_text)

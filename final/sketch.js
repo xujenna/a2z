@@ -82,7 +82,7 @@ let statCards = document.querySelectorAll('.playerStats');
 
 let plotSVG = d3.select("#tsneSVG")
 .append("svg:svg")
-  .attr("width","85%")
+  .attr("width","90%")
   .attr("height","98%");
 
 
@@ -234,7 +234,8 @@ function newTurn(word) {
         playerOnePoints += score;
         playerOneTimePenalty += timePenalty;
 
-        if(playerOneScore >= 8000){
+        if(playerOneScore >= 9000){
+          recognition.stop();
           gameOver(playerNum);
         }
         else if(playerOneScore > 0){
@@ -253,7 +254,8 @@ function newTurn(word) {
         playerTwoPoints += score;
         playerTwoTimePenalty += timePenalty;
         
-        if(playerTwoScore >= 8000){
+        if(playerTwoScore >= 9000){
+          recognition.stop();
           gameOver(playerNum);
         }
         else if(playerTwoScore > 0){
@@ -312,7 +314,7 @@ async function getCoordinates(word,score,timePenalty,playerNum) {
   // let wordIndex = data.indexOf(Array.prototype.slice.call(word2vec.model[word].dataSync()));
   await tsneCoordinates.then(function(result) {
     console.log(result[wordIndex]);
-    let xCoord = scale(result[wordIndex][0], 0, 1, 0, (window.innerWidth * 0.85));
+    let xCoord = scale(result[wordIndex][0], 0, 1, 0, (window.innerWidth * 0.90));
     let yCoord = scale(result[wordIndex][1], 0, 1, 0, (window.innerHeight * 0.98));
     console.log(xCoord)
     console.log(yCoord)
