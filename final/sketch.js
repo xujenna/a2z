@@ -82,8 +82,8 @@ let statCards = document.querySelectorAll('.playerStats');
 
 let plotSVG = d3.select("#tsneSVG")
 .append("svg:svg")
-  .attr("width","90%")
-  .attr("height","98%");
+  .attr("width", (window.innerWidth - 120))
+  .attr("height", (window.innerHeight - 50));
 
 
 async function speak(textInput) {
@@ -140,13 +140,17 @@ function start() {
   document.getElementById('restart-button').style.display= "none";
   document.querySelector('#start-button > button').style.display = "none";
   document.getElementById('rules').style.display= "none";
+  document.getElementById('playerOneBar').style.height = "0px";
+  document.getElementById('playerTwoBar').style.height = "0px";
+
   turnBar.style.display = "block";
 
   plotSVG.remove();
   plotSVG = d3.select("#tsneSVG")
   .append("svg:svg")
-    .attr("width",1300)
-    .attr("height",800);
+    .attr("width", (window.innerWidth - 120))
+    .attr("height", (window.innerHeight - 50));
+  
   document.getElementById('countDown').style.display = "inline-block";
 
   // document.querySelector('#tsneCanvas').style.display = "block";
@@ -185,15 +189,18 @@ function newTurn(word) {
     document.getElementById('countDown').textContent = "00:0" + (7-count);
     if(count >= 6){
       recognition.stop();
-
+      
       if(playerNum == 1){
         speak("Time's up! Player 2 Wins!")
+        clearInterval(counter);
         gameOver(2);
       }
       else if(playerNum ==2){
         speak("Time's up! Player 1 Wins!")
+        clearInterval(counter);
         gameOver(1);
       }
+      return;
     }
   }, 1000);
 
@@ -201,50 +208,58 @@ function newTurn(word) {
   recognition.lang = 'en-US';
   recognition.start();
 
+  let newWord;
+  let timePenalty;
+
   recognition.onresult = event => {
     document.getElementById('tryAgain').textContent = "";
 
-    let timePenalty = Math.pow(count, 3) * 10;
+    timePenalty = Math.pow(count, 3) * 10;
     console.log("time penalty: " + timePenalty)
     clearInterval(counter);
 
-    let newWord = event.results[0][0].transcript;
+    newWord = event.results[0][0].transcript;
     newWord = newWord.toLowerCase();
     console.log(word)
     console.log(newWord)
     // console.log(newWord)
     // document.getElementById('currentWord').textContent = newWord;
-
+  }
+  recognition.onend = () => {
+		console.log("ended recording");
+    recognition.stop();
     try {
       // document.getElementById('newEmbeddingText').removeAttribute("id");
-
+  
       let score = Math.round(Math.pow(distance(word, newWord),4) * 100);
       let newScore = score - timePenalty;
       console.log("score: " + score)
       console.log("newScore: " + newScore)
       console.log("timePenalty: " + timePenalty)
-
+  
       // document.getElementById('lastRoundScore').textContent = newScore;
       // document.getElementById('lastRoundPoints').textContent = newScore + timePenalty;
       // document.getElementById('lastRoundTimePenalty').textContent = timePenalty;
       getCoordinates(newWord, score, timePenalty, playerNum);
-
+  
       if(playerNum == 1){
         playerOneScore += newScore;
         playerOnePoints += score;
         playerOneTimePenalty += timePenalty;
-
-        if(playerOneScore >= 9000){
-          recognition.stop();
-          gameOver(playerNum);
-        }
-        else if(playerOneScore > 0){
+  
+        if(playerOneScore >= (window.innerHeight * 10)){
           document.getElementById('playerOneBar').style.height = (playerOneScore/10) + "px";
+          gameOver(playerNum);
+          return;
         }
-        else if(playerOneScore <= 0){
-          document.getElementById('playerOneBar').style.height = "0px";
+        else if(playerOneScore >= 0){
+          document.getElementById('playerOneBar').style.height = (playerOneScore/10) + "px";
+          newTurn(newWord)
         }
-
+        // else if(playerOneScore <= 0){
+        //   document.getElementById('playerOneBar').style.height = "0px";
+        // }
+  
         // document.getElementById('playerOneScore').textContent = playerOneScore;
         // document.getElementById('playerOnePoints').textContent = playerOnePoints;
         // document.getElementById('playerOneTimePenalty').textContent = playerOneTimePenalty;
@@ -254,21 +269,22 @@ function newTurn(word) {
         playerTwoPoints += score;
         playerTwoTimePenalty += timePenalty;
         
-        if(playerTwoScore >= 9000){
-          recognition.stop();
+        if(playerTwoScore >= (window.innerHeight * 10)){
+          document.getElementById('playerTwoBar').style.height = (playerTwoScore/10) + "px";
           gameOver(playerNum);
+          return;
         }
         else if(playerTwoScore > 0){
           document.getElementById('playerTwoBar').style.height = (playerTwoScore/10) + "px";
+          newTurn(newWord)
         }
-        else if(playerTwoScore <= 0){
-          document.getElementById('playerTwoBar').style.height = "0px";
-        }
+        // else if(playerTwoScore <= 0){
+        //   document.getElementById('playerTwoBar').style.height = "0px";
+        // }
         // document.getElementById('playerTwoScore').textContent = playerTwoScore;
         // document.getElementById('playerTwoPoints').textContent = playerTwoPoints;
         // document.getElementById('playerTwoTimePenalty').textContent = playerTwoTimePenalty;
       }
-      newTurn(newWord)
     }
     catch(err){
       console.log("error: " + err)
@@ -277,10 +293,6 @@ function newTurn(word) {
       tryAgain = true;
       setTimeout(function(){newTurn(word)}, 1500);
     }
-  }
-  recognition.onend = () => {
-		console.log("ended recording");
-		recognition.stop();
   }
   recognition.onerror = event => {
 		console.log("error: " + event.error);
@@ -314,8 +326,8 @@ async function getCoordinates(word,score,timePenalty,playerNum) {
   // let wordIndex = data.indexOf(Array.prototype.slice.call(word2vec.model[word].dataSync()));
   await tsneCoordinates.then(function(result) {
     console.log(result[wordIndex]);
-    let xCoord = scale(result[wordIndex][0], 0, 1, 0, (window.innerWidth * 0.90));
-    let yCoord = scale(result[wordIndex][1], 0, 1, 0, (window.innerHeight * 0.98));
+    let xCoord = scale(result[wordIndex][0], 0, 1, 0, (window.innerWidth * 0.87));
+    let yCoord = scale(result[wordIndex][1], 0, 1, 0, (window.innerHeight * 0.96));
     console.log(xCoord)
     console.log(yCoord)
 
@@ -383,7 +395,7 @@ function distance(a, b) {
 }
 
 function gameOver(playerNum){
-  clearInterval(counter);
+  // clearInterval(counter);
 
   document.getElementById('countDown').style.display = "none";
   // document.getElementById('player').textContent = "Player " + playerNum + " Wins!";
@@ -430,7 +442,7 @@ function gameOver(playerNum){
   // document.querySelector('#start-button > button').style.display = "block";
   // document.querySelector('#start-button > button').textContent = "Restart Game";
   document.getElementById('restart-button').style.display= "block";
-
+  return;
 }
 
 
