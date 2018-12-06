@@ -187,17 +187,16 @@ function newTurn(word) {
   counter = setInterval(function() {
     count += 1;
     document.getElementById('countDown').textContent = "00:0" + (7-count);
-    if(count >= 6){
+    if(count >= 5){
       recognition.stop();
-      
+
       if(playerNum == 1){
         speak("Time's up! Player 2 Wins!")
-        clearInterval(counter);
         gameOver(2);
+        //how do i stop the turn from here???????????????????????????????????????
       }
       else if(playerNum ==2){
         speak("Time's up! Player 1 Wins!")
-        clearInterval(counter);
         gameOver(1);
       }
       return;
@@ -291,7 +290,7 @@ function newTurn(word) {
       document.getElementById('tryAgain').textContent = "Try again ('" + newWord + "' not in model)";
       speak("Try again");
       tryAgain = true;
-      setTimeout(function(){newTurn(word)}, 1500);
+      setTimeout(function(){newTurn(word)}, 1200);
     }
   }
   recognition.onerror = event => {
