@@ -37,6 +37,10 @@
     transform: translateY(10px)
   }
 
+  #start-button > button:focus{
+    outline:0;
+  }
+
   #restart-button{
     width:140px;
     height:50px;
@@ -51,19 +55,21 @@
     padding: 10px;
     cursor:pointer;
     text-align: center;
-    /* box-shadow: 0 10px #b20000; */
+    box-shadow: 3px 3px white;
   }
 
   #restart-button:hover{
-    background-color: magenta;
+    background-color: rgba(250,250,250,0.25);
   }
 
-  /* #restart-button:active{
-    background-color: red;
-    box-shadow: 0 5px #b20000;
-    transform: translateY(5px)
-  } */
+  #restart-button:active{
+    box-shadow: 3px 1px white;
+    transform: translateY(2px)
+  }
 
+  #restart-button:focus{
+    outline:0;
+  }
   #restartButtonContainer{
     display:none;
 
@@ -84,7 +90,7 @@
     position:fixed;
     top:0px;
     width:100%;
-    height:50px;
+    height:60px;
     padding:10px;
     background-color: grey;
     /* width:180px; */
@@ -92,8 +98,12 @@
 
 #turnBar > div {
   display:inline-block;
-  margin-left:100px;
+  margin-left:75px;
   vertical-align: middle;
+}
+
+#turnBar > div > h1 {
+  font-size:30px;
 }
 
   #timer{
@@ -105,11 +115,10 @@
     /* color:black; */
     /* padding:10px; */
     /* margin:20px; */
+    /* line-height:30px; */
   }
 
-  #timer > h1{
-    font-size:30px;
-  }
+ 
   #lastRoundPoints{
     color:blue;
   }
@@ -119,7 +128,7 @@
 
   .embeddingText {
     font-family:monospace;
-    font-size:13px;
+    font-size:14px;
     font-weight:bold;
     letter-spacing:0.75px;
   }
@@ -127,6 +136,7 @@
   #newEmbeddingText {
     font-family:monospace;
     font-size:26px;
+    font-weight:bold;
   }
 
   .player1text{
@@ -151,13 +161,13 @@
     stroke: orangered;
     stroke-width: 3;
     opacity: 0.6;
-    stroke-dasharray: 3;
+    /* stroke-dasharray: 3; */
   }
   .player2line{
     stroke: dodgerblue;
     stroke-width: 3;
     opacity: 0.6;
-    stroke-dasharray: 3;
+    /* stroke-dasharray: 3; */
   }
 
   #rules{
@@ -180,13 +190,16 @@
     letter-spacing: 4px;
   }
 
+  #playerContainer{
+    margin-left:0px;
+  }
 
   #playerOneStats > .title{
-    border-bottom: 2px solid orangered;
+    border-bottom: 3px solid orangered;
     color:orangered;
   }
   #playerTwoStats > .title{
-    border-bottom: 2px solid dodgerblue;
+    border-bottom: 3px solid dodgerblue;
     color:dodgerblue;
   }
   .playerStats{
@@ -198,7 +211,7 @@
     display:none;
     position:fixed;
     top:0px;
-    box-shadow: 5px 5px rgba(128,128,128, 0.5);
+    box-shadow: 10px 10px rgba(128,128,128, 0.5);
     background-color: white;
   }
 
@@ -221,7 +234,7 @@
     font-size:24px;
   }
   #playerOneStats{
-    border: 2px solid orangered;
+    border: 3px solid orangered;
     color: orangered;
     left:60px;
   }
@@ -229,9 +242,9 @@
     /* border-right: 2px solid orangered; */
   }
   #playerTwoStats{
-    border: 2px solid dodgerblue;
+    border: 3px solid dodgerblue;
     color: dodgerblue;
-    right:65px;
+    right:70px;
   }
   #playerTwoStats p {
     /* border-right: 2px solid dodgerblue; */
@@ -260,11 +273,85 @@
     /* margin-top:10px; */
   }
 
-  #hiScore{
-    margin:auto;
+  #highScore{
     position: fixed;
     display:none;
+    width:40%;
+    left: 50%;
+    margin-left:-23%;
+    top: 30%;
+    margin-top: -10%;
+    padding: 40px 40px 60px 40px;
+    background-color: white;
+    box-shadow: 10px 10px rgba(128,128,128, 0.5);
+    border: 3px solid black;
+    max-height: 80%;
+    overflow:scroll;
   }
+
+  #highScore input{
+    width: 50%;
+    font-size: 24px;
+    height: 34px;
+    font-family: monospace;
+    color: grey;
+    padding: 10px;
+    border: 3px solid grey;
+    margin-top: 40px;
+    margin-bottom: 10px;
+    color: grey;
+  }
+
+  #highScore input:focus{
+    outline:0;
+  }
+
+  #highScore button{
+    margin-left:20px;
+    font-size:18px;
+    font-family: monospace;
+    font-weight: bold;
+    height:60px;
+    padding:10px;
+    border: 3px solid black;
+    color:black;
+    box-shadow: 3px 3px black;
+    cursor:pointer;
+  }
+
+  #highScore button:hover{
+    border: 3px solid fuchsia;
+    color:fuchsia;
+    box-shadow: 3px 3px fuchsia; 
+  }
+
+  #highScore button:active{
+    box-shadow: 3px 1px rgba(128,128,128, 0.5);
+    transform: translateY(2px)
+  }
+
+  #highScore button:focus{
+    outline:0;
+  }
+
+#closeHighScore{
+  position:absolute;
+  top:0px;
+  right:8px;
+  padding:10px;
+  font-weight:bold;
+  font-size:20px;
+  cursor:pointer;
+}
+
+#closeHighScore:hover{
+  color:fuchsia;
+}
+
+#highScore p{
+  font-size:36px;
+}
+
   </style>
 
 
@@ -276,6 +363,7 @@
   <script src="https://cdn.jsdelivr.net/npm/@tensorflow/tfjs-tsne"></script>
   <script src="https://d3js.org/d3.v4.min.js"></script>
   <script src="https://www.gstatic.com/firebasejs/5.6.0/firebase.js"></script>
+  <script src="https://d3js.org/d3-ease.v1.min.js"></script>
 
 </head>
 
@@ -331,10 +419,11 @@
   </div>
 
 
-  <div id="hiScore">
+  <div id="highScore">
+    <div id="closeHighScore">X</div>
     <h1>High Score!</h1>
-    <input type="text" id="name" name="name" value="name" size="40" required>
-    
+    <input type="text" id="hiScore_name" name="hiScore_name" size="40" required>
+    <button id="submitHighScore">SUBMIT</button>
   </div>
 
 

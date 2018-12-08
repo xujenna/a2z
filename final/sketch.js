@@ -46,22 +46,23 @@ class Word2Vec {
 };
 
 
-  // Initialize Firebase
-  // var config = {
-  //   apiKey: "AIzaSyAGKvWESjIqkNOXic9P-SCCrcFjFn3tmKM",
-  //   authDomain: "word2vecgame.firebaseapp.com",
-  //   databaseURL: "https://word2vecgame.firebaseio.com",
-  //   projectId: "word2vecgame",
-  //   storageBucket: "word2vecgame.appspot.com",
-  //   messagingSenderId: "254456730638"
-  // };
-  // firebase.initializeApp(config);
+  var config = {
+    apiKey: "AIzaSyAGKvWESjIqkNOXic9P-SCCrcFjFn3tmKM",
+    authDomain: "word2vecgame.firebaseapp.com",
+    databaseURL: "https://word2vecgame.firebaseio.com",
+    projectId: "word2vecgame",
+    storageBucket: "word2vecgame.appspot.com",
+    messagingSenderId: "254456730638"
+  };
+  firebase.initializeApp(config);
 
 
-// var database = firebase.database();
+var database = firebase.database();
 let word2vec = new Word2Vec('data/wordvecs10000.json', modelLoaded);
 const SpeechRecognition = webkitSpeechRecognition;
 const synth = window.speechSynthesis;
+
+
 let playerOneScore = 0;
 let playerOnePoints = 0;
 let playerOneTimePenalty = 0;
@@ -181,38 +182,31 @@ function newTurn(word) {
   }
   console.log("newTurn PlayerNum: "+ playerNum)
 
-  document.getElementById('player').textContent = "Player " + playerNum;
+  document.getElementById('player').textContent = "PLAYER " + playerNum + " TURN";
+
+
+  const recognition = new SpeechRecognition();
+  recognition.lang = 'en-US';
+  recognition.continuous = true;
+  recognition.interimResults = true;
+  recognition.start();
+
 
   let count = 0;
   counter = setInterval(function() {
     count += 1;
-    document.getElementById('countDown').textContent = "00:0" + (7-count);
-    if(count >= 5){
-      recognition.stop();
-
-      if(playerNum == 1){
-        speak("Time's up! Player 2 Wins!")
-        gameOver(2);
-        //how do i stop the turn from here???????????????????????????????????????
-      }
-      else if(playerNum ==2){
-        speak("Time's up! Player 1 Wins!")
-        gameOver(1);
-      }
-      return;
-    }
+    document.getElementById('countDown').textContent = "00:0" + count;
   }, 1000);
 
-  const recognition = new SpeechRecognition();
-  recognition.lang = 'en-US';
-  recognition.start();
 
   let newWord;
   let timePenalty;
 
   recognition.onresult = event => {
-    document.getElementById('tryAgain').textContent = "";
 
+  if(event.results[0][0].transcript !== undefined){
+    recognition.stop();
+    document.getElementById('tryAgain').textContent = "";
     timePenalty = Math.pow(count, 3) * 10;
     console.log("time penalty: " + timePenalty)
     clearInterval(counter);
@@ -221,24 +215,19 @@ function newTurn(word) {
     newWord = newWord.toLowerCase();
     console.log(word)
     console.log(newWord)
-    // console.log(newWord)
-    // document.getElementById('currentWord').textContent = newWord;
+  }
+
   }
   recognition.onend = () => {
 		console.log("ended recording");
-    recognition.stop();
-    try {
-      // document.getElementById('newEmbeddingText').removeAttribute("id");
-  
+    try {  
       let score = Math.round(Math.pow(distance(word, newWord),4) * 100);
       let newScore = score - timePenalty;
       console.log("score: " + score)
       console.log("newScore: " + newScore)
       console.log("timePenalty: " + timePenalty)
   
-      // document.getElementById('lastRoundScore').textContent = newScore;
-      // document.getElementById('lastRoundPoints').textContent = newScore + timePenalty;
-      // document.getElementById('lastRoundTimePenalty').textContent = timePenalty;
+
       getCoordinates(newWord, score, timePenalty, playerNum);
   
       if(playerNum == 1){
@@ -255,13 +244,11 @@ function newTurn(word) {
           document.getElementById('playerOneBar').style.height = (playerOneScore/10) + "px";
           newTurn(newWord)
         }
-        // else if(playerOneScore <= 0){
-        //   document.getElementById('playerOneBar').style.height = "0px";
-        // }
-  
-        // document.getElementById('playerOneScore').textContent = playerOneScore;
-        // document.getElementById('playerOnePoints').textContent = playerOnePoints;
-        // document.getElementById('playerOneTimePenalty').textContent = playerOneTimePenalty;
+        else if(playerOneScore < 0){
+          document.getElementById('playerOneBar').style.height = "0px";
+          newTurn(newWord)
+        }
+
       }
       else if(playerNum == 2){
         playerTwoScore += newScore;
@@ -273,24 +260,23 @@ function newTurn(word) {
           gameOver(playerNum);
           return;
         }
-        else if(playerTwoScore > 0){
+        else if(playerTwoScore >= 0){
           document.getElementById('playerTwoBar').style.height = (playerTwoScore/10) + "px";
           newTurn(newWord)
         }
-        // else if(playerTwoScore <= 0){
-        //   document.getElementById('playerTwoBar').style.height = "0px";
-        // }
-        // document.getElementById('playerTwoScore').textContent = playerTwoScore;
-        // document.getElementById('playerTwoPoints').textContent = playerTwoPoints;
-        // document.getElementById('playerTwoTimePenalty').textContent = playerTwoTimePenalty;
+        else if(playerTwoScore < 0){
+          document.getElementById('playerTwoBar').style.height = "0px";
+          newTurn(newWord)
+        }
+
       }
     }
     catch(err){
       console.log("error: " + err)
       document.getElementById('tryAgain').textContent = "Try again ('" + newWord + "' not in model)";
-      speak("Try again");
+      speak("Try again ('" + newWord + "' not in model)");
       tryAgain = true;
-      setTimeout(function(){newTurn(word)}, 1200);
+      setTimeout(function(){newTurn(word)}, 3200);
     }
   }
   recognition.onerror = event => {
@@ -330,7 +316,8 @@ async function getCoordinates(word,score,timePenalty,playerNum) {
     console.log(xCoord)
     console.log(yCoord)
 
-
+  
+  function plotWord(){
     plotSVG.append("text")
       .text(word)
       .attr("x", xCoord + 10)
@@ -343,19 +330,13 @@ async function getCoordinates(word,score,timePenalty,playerNum) {
       .attr("r", 5)
       .attr("fill", "silver")
       .attr("class", "player" + playerNum + "text");
+  }
 
-    if(prev_xCoord !== 0 && prev_yCoord !== 0){
-      // let points;
-      // let scoreColor;
+    if(prev_xCoord == 0 && prev_yCoord == 0){
+      plotWord();
+    }
+    else if(prev_xCoord !== 0 && prev_yCoord !== 0){
 
-      // if(newScore >= 0){
-      //   points = "+" + score;
-      //   scoreColor = "aqua";
-      // }
-      // else{
-      //   points = score;
-      //   scoreColor = "magenta";
-      // }
       plotSVG.append("text")
         .text("+" + score + " distance")
         .attr("x", xCoord + 5)
@@ -369,16 +350,27 @@ async function getCoordinates(word,score,timePenalty,playerNum) {
         .attr("fill", "magenta")
         .attr("class", "plotScore");
 
-      plotSVG.append("line")
+      let lineClass = "player" + playerNum + "line";
+      var path = plotSVG.append("line")
         .attr("x1", prev_xCoord)
         .attr("y1", prev_yCoord)
         .attr("x2", xCoord)
         .attr("y2", yCoord)
-        .attr("class", "player" + playerNum + "line")
+        .attr("class", lineClass)
         .attr("stroke", "silver")
         .attr("stroke-width", 3)
         .attr("opacity", 0.6)
-        .attr("stroke-dasharray", 3);
+
+      var totalLength = path.node().getTotalLength();
+
+      path
+        .attr("stroke-dasharray", totalLength + " " + totalLength)
+        .attr("stroke-dashoffset", totalLength)
+        .transition()
+          .duration(250)
+          .ease(d3.easeLinear)
+          .attr("stroke-dashoffset",0)
+          .on("end", function(d){path.attr("stroke-dasharray", 3); plotWord();})
     }
     prev_xCoord = xCoord;
     prev_yCoord = yCoord;
@@ -396,8 +388,10 @@ function distance(a, b) {
 function gameOver(playerNum){
   // clearInterval(counter);
 
-  document.getElementById('countDown').style.display = "none";
-  // document.getElementById('player').textContent = "Player " + playerNum + " Wins!";
+  document.getElementById('player').textContent = "PLAYER";
+  document.getElementById('countDown').textContent = playerNum;
+  document.getElementById('tryAgain').textContent = "WINS!!";
+
 
   statCards.forEach(function(d){
     d.style.display = "inline-block";
@@ -411,54 +405,132 @@ function gameOver(playerNum){
 
   speak("Player " + playerNum + " Wins!")
 
-  if(playerNum == 1){
-    // document.getElementById('player').style.color = "orangered";
-    turnBar.style.backgroundColor = "orangered";
-  }
-  else{
-    // document.getElementById('player').style.color = "dodgerblue";
-    turnBar.style.backgroundColor = "dodgerblue";
-  }
-  // if(playerOneScore>playerTwoScore){
-  //   speak("Player one wins!");
-  //   document.getElementById('player').textContent = "Player 1 Wins!";
-  //   document.getElementById('player').style.color = "orangered";
-  //   body.style.border = "25px solid orangered";
-
-  // }
-  // else if (playerTwoScore>playerOneScore){
-  //   speak("Player two wins!");
-  //   document.getElementById('player').textContent = "Player 2 Wins!";
-  //   document.getElementById('player').style.color = "dodgerblue";
-  //   body.style.border = "25px solid dodgerblue";
-  // }
-  // else if (playerOneScore==playerTwoScore){
-  //   speak("It's a tie!");
-  //   document.getElementById('player').textContent = "Draw!"
-  //   body.style.border = "25px solid black";
-  // }
-  // document.querySelector('#start-button > button').disabled = false;
-  // document.querySelector('#start-button > button').style.display = "block";
-  // document.querySelector('#start-button > button').textContent = "Restart Game";
   document.getElementById('restart-button').style.display= "block";
+
+
+  let minThreshold;
+  let scoresDB = database.ref('/scores/');
+  
+  scoresDB.on('value',(snapshot)=>{
+    let scores = snapshot.val();
+    let scoresKeys = Object.keys(scores).sort(function(a,b){return b-a});
+    if(scoresKeys.length < 6){
+      // minThreshold = scoresKeys[scoresKeys.length-1]
+      minThreshold = 0;
+      console.log(minThreshold);
+    }
+    else{
+      minThreshold = scoresKeys[5];
+      console.log(minThreshold);
+    }
+
+    if(playerNum == 1){
+      // document.getElementById('player').style.color = "orangered";
+      turnBar.style.backgroundColor = "orangered";
+      console.log("playerOneScore: " + playerOneScore)
+      console.log("minThreshold: " + minThreshold)
+  
+      if(playerOneScore >= minThreshold){
+        console.log("high score")
+        highScore(playerNum, playerOneScore, playerOnePoints, playerOneTimePenalty);
+      }
+      else if (playerOneScore < minThreshold){
+        // let fromHighScore = "False";
+        highScoreBoard();
+      }
+    }
+    else{
+      // document.getElementById('player').style.color = "dodgerblue";
+      turnBar.style.backgroundColor = "dodgerblue";
+      console.log("playerTwoScore: " + playerTwoScore)
+      console.log("minThreshold: " + minThreshold)
+  
+      if(playerTwoScore >= minThreshold){
+        console.log("high score")
+        highScore(playerNum, playerTwoScore, playerTwoPoints, playerTwoTimePenalty);
+      }
+      else if (playerTwoScore < minThreshold) {
+        // let fromHighScore = "False";
+        highScoreBoard();
+      }
+    }
+  })
   return;
 }
 
 
-// function highScore(playerNum, totalScore, totalPoints, totalTimePenalty){
+function highScore(playerNum, totalScore, totalPoints, totalTimePenalty){
+  console.log("in highScore")
+  let ps = highScoreDiv.querySelectorAll('p');
+  ps.forEach(function(d){ highScoreDiv.removeChild(d)});
 
-//   document.getElementById("hiScore").style.display = "block";
+  let highScoreDiv = document.getElementById("highScore");
+  highScoreDiv.style.display = "block";
+  let highScoreInput = document.getElementById("hiScore_name");
+  highScoreInput.style.display = "inline-block";
+  highScoreInput.value = "Player " + playerNum + " Name";
+  let submitButton = document.getElementById("submitHighScore");
+  submitButton.style.display = "inline-block";
 
-//   let time = Date.now();
-//   let key = "/scores/" + time;
-//   let newGameEntry = {};
+  let time = Date.now();
+  let key = "/scores/" + totalScore;
+  let newGameEntry = {};
 
-//   newGameEntry["time"] = Date.now();
-//   newGameEntry["playerName"] = Date.now();
-//   newGameEntry["totalScore"] = totalScore;
-//   newGameEntry["totalPoints"] = totalPoints;
-//   newGameEntry["totalTimePenalty"] = totalTimePenalty;
+  newGameEntry["time"] = time;
+  newGameEntry["totalScore"] = totalScore;
+  newGameEntry["totalPoints"] = totalPoints;
+  newGameEntry["totalTimePenalty"] = totalTimePenalty;
 
-//   database.ref(key).set(newobject);
+  submitButton.onclick = function(){
+    newGameEntry["playerName"] = highScoreInput.value;
+    database.ref(key).set(newGameEntry);
+    // let fromHighScore = "True"
+    // highScoreDiv(fromHighScore);
 
-// }
+    submitButton.style.display = "none"
+    document.querySelector("#highScore > h1").textContent = "High Scores";
+    highScoreInput.style.display = "none";
+
+    let scoresDB = database.ref('/scores/');
+    scoresDB.on('value',(snapshot)=>{
+      let scores = snapshot.val();
+      let scoresKeys = Object.keys(scores).sort(function(a,b){return b-a});
+      scoresKeys.forEach(function(d){
+        let entry = document.createElement('p')
+        entry.textContent = scores[d]['playerName'] + ": " + d;
+        highScoreDiv.appendChild(entry)
+      })
+    })
+  }
+
+  document.getElementById('closeHighScore').onclick = function(){
+    highScoreDiv.style.display = "none";
+  }
+}
+
+
+function highScoreBoard(){
+  console.log("in highScoreBoard")
+  let highScoreDiv = document.getElementById("highScore");
+  highScoreDiv.style.display = "block";
+
+  document.getElementById("submitHighScore").style.display = "none"
+  document.querySelector("#highScore > h1").textContent = "High Scores";
+  document.getElementById("hiScore_name").style.display = "none";
+
+  let scoresDB = database.ref('/scores/');
+  scoresDB.on('value',(snapshot)=>{
+    let scores = snapshot.val();
+    let scoresKeys = Object.keys(scores).sort(function(a,b){return b-a});
+    scoresKeys.forEach(function(d){
+      let entry = document.createElement('p')
+      entry.textContent = scores[d]['playerName'] + ": " + d;
+      highScoreDiv.appendChild(entry)
+    })
+  })
+  document.getElementById('closeHighScore').onclick = function(){
+    let ps = highScoreDiv.querySelectorAll('p');
+    ps.forEach(function(d){ highScoreDiv.removeChild(d)});
+    highScoreDiv.style.display = "none";
+  }
+}
