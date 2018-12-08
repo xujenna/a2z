@@ -79,6 +79,7 @@ let playerNum = 0;
 let tryAgain = false;
 let turnBar = document.getElementById('turnBar');
 let statCards = document.querySelectorAll('.playerStats');
+let turns;
 
 
 let plotSVG = d3.select("#tsneSVG")
@@ -130,6 +131,7 @@ function start() {
   playerTwoScore = 0;
   playerTwoPoints = 0;
   playerTwoTimePenalty = 0;
+  turns = 0;
   // document.querySelector('#start-button > button').disabled = true;
   // let scores = document.querySelectorAll(".playerStats > h2");
   // scores.forEach(function(d){d.textContent=0});
@@ -137,7 +139,7 @@ function start() {
   statCards.forEach(function(d){
     d.style.display = "none";
   })
-
+  document.getElementById("highScore").style.display = "none";
   document.getElementById('restart-button').style.display= "none";
   document.querySelector('#start-button > button').style.display = "none";
   document.getElementById('rules').style.display= "none";
@@ -167,8 +169,11 @@ function start() {
 
 
 function newTurn(word) {
+  turns += 1;
+
   if(tryAgain==true){
     tryAgain = false;
+    turns -= 1;
   }
   else{
     if(playerNum == 0 || playerNum == 2){
@@ -387,25 +392,57 @@ function distance(a, b) {
 
 function gameOver(playerNum){
   // clearInterval(counter);
-
   document.getElementById('player').textContent = "PLAYER";
   document.getElementById('countDown').textContent = playerNum;
   document.getElementById('tryAgain').textContent = "WINS!!";
 
-
   statCards.forEach(function(d){
     d.style.display = "inline-block";
   })
+
+  speak("Player " + playerNum + " Wins!")
+
+  document.getElementById('restart-button').style.display= "block";
+
+  
+  let efficiencyBonus;
+  if(turns <=8){
+    efficiencyBonus = Math.pow((10-turns), 5) * 2;
+  }
+  else{
+    efficiencyBonus = 0;
+  }
+  
+  let winningScore;
+  if(playerNum == 1){
+    turnBar.style.backgroundColor = "orangered";
+    playerOneScore += efficiencyBonus;
+    winningScore = playerOneScore;
+    winningPoints = playerOnePoints;
+    winningEfficiencyBonus = efficiencyBonus;
+    winningTimePenalty = playerOneTimePenalty;
+    document.getElementById('playerOneEfficiencyBonus').textContent = efficiencyBonus;
+    document.getElementById('playerTwoEfficiencyBonus').textContent = 0;
+
+  }
+  else if (playerNum == 2){
+    turnBar.style.backgroundColor = "dodgerblue";
+    playerTwoScore += efficiencyBonus;
+    winningScore = playerTwoScore;
+    winningPoints = playerTwoPoints;
+    winningEfficiencyBonus = efficiencyBonus;
+    winningTimePenalty = playerTwoTimePenalty;
+    document.getElementById('playerTwoEfficiencyBonus').textContent = efficiencyBonus;
+    document.getElementById('playerOneEfficiencyBonus').textContent = 0;
+
+  }
+
   document.getElementById('playerOneScore').textContent = playerOneScore;
   document.getElementById('playerOnePoints').textContent = playerOnePoints;
   document.getElementById('playerOneTimePenalty').textContent = playerOneTimePenalty;
   document.getElementById('playerTwoScore').textContent = playerTwoScore;
   document.getElementById('playerTwoPoints').textContent = playerTwoPoints;
   document.getElementById('playerTwoTimePenalty').textContent = playerTwoTimePenalty;
-
-  speak("Player " + playerNum + " Wins!")
-
-  document.getElementById('restart-button').style.display= "block";
 
 
   let minThreshold;
@@ -417,54 +454,35 @@ function gameOver(playerNum){
     if(scoresKeys.length < 6){
       // minThreshold = scoresKeys[scoresKeys.length-1]
       minThreshold = 0;
-      console.log(minThreshold);
     }
     else{
       minThreshold = scoresKeys[5];
-      console.log(minThreshold);
     }
 
-    if(playerNum == 1){
-      // document.getElementById('player').style.color = "orangered";
-      turnBar.style.backgroundColor = "orangered";
-      console.log("playerOneScore: " + playerOneScore)
-      console.log("minThreshold: " + minThreshold)
-  
-      if(playerOneScore >= minThreshold){
-        console.log("high score")
-        highScore(playerNum, playerOneScore, playerOnePoints, playerOneTimePenalty);
-      }
-      else if (playerOneScore < minThreshold){
-        // let fromHighScore = "False";
-        highScoreBoard();
-      }
+    console.log("winningScore: " + winningScore)
+    console.log("minThreshold: " + minThreshold)
+
+    if(winningScore >= minThreshold){
+      console.log("high score")
+      highScore(playerNum, winningScore, winningPoints, winningEfficiencyBonus, winningTimePenalty);
     }
-    else{
-      // document.getElementById('player').style.color = "dodgerblue";
-      turnBar.style.backgroundColor = "dodgerblue";
-      console.log("playerTwoScore: " + playerTwoScore)
-      console.log("minThreshold: " + minThreshold)
-  
-      if(playerTwoScore >= minThreshold){
-        console.log("high score")
-        highScore(playerNum, playerTwoScore, playerTwoPoints, playerTwoTimePenalty);
-      }
-      else if (playerTwoScore < minThreshold) {
-        // let fromHighScore = "False";
-        highScoreBoard();
-      }
+    else if (winningScore < minThreshold){
+      // let fromHighScore = "False";
+      highScoreBoard();
     }
   })
   return;
 }
 
 
-function highScore(playerNum, totalScore, totalPoints, totalTimePenalty){
+function highScore(playerNum, totalScore, totalPoints, efficiencyBonus, totalTimePenalty){
   console.log("in highScore")
+
+  let highScoreDiv = document.getElementById("highScore");
+
   let ps = highScoreDiv.querySelectorAll('p');
   ps.forEach(function(d){ highScoreDiv.removeChild(d)});
 
-  let highScoreDiv = document.getElementById("highScore");
   highScoreDiv.style.display = "block";
   let highScoreInput = document.getElementById("hiScore_name");
   highScoreInput.style.display = "inline-block";
@@ -479,6 +497,7 @@ function highScore(playerNum, totalScore, totalPoints, totalTimePenalty){
   newGameEntry["time"] = time;
   newGameEntry["totalScore"] = totalScore;
   newGameEntry["totalPoints"] = totalPoints;
+  newGameEntry["efficiencyBonus"] = efficiencyBonus;
   newGameEntry["totalTimePenalty"] = totalTimePenalty;
 
   submitButton.onclick = function(){
