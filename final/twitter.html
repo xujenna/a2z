@@ -1,0 +1,439 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+
+  <style type="text/css">
+
+  body{
+    text-align: center;
+    font-family: monospace;
+    margin:0;
+    background-color: whitesmoke;
+  }
+
+  #start-button > button{
+    width:300px;
+    height:300px;
+    background-color: #ff3232;
+    border-radius: 300px;
+    font-size: 25px;
+    font-family: monospace;
+    font-weight:bold;
+    color: white;
+    padding: 20px;
+    cursor:pointer;
+    text-align: center;
+    box-shadow: 0 20px #b20000;
+    border: none;
+  }
+
+  #start-button > button:hover {
+    background-color: red;
+  }
+  #start-button > button:active {
+    background-color: red;
+    box-shadow: 0 10px #b20000;
+    transform: translateY(10px)
+  }
+
+  #start-button > button:focus{
+    outline:0;
+  }
+
+  #restart-button{
+    width:140px;
+    height:50px;
+    border-radius: 60px;
+    border: 3px solid white;
+    background-color: transparent;
+    display:none;
+    font-size: 16px;
+    font-family: monospace;
+    font-weight:bold;
+    color: white;
+    padding: 10px;
+    cursor:pointer;
+    text-align: center;
+    box-shadow: 3px 3px white;
+  }
+
+  #restart-button:hover{
+    background-color: rgba(250,250,250,0.25);
+  }
+
+  #restart-button:active{
+    box-shadow: 3px 1px white;
+    transform: translateY(2px)
+  }
+
+  #restart-button:focus{
+    outline:0;
+  }
+  #restartButtonContainer{
+    display:none;
+
+    /* width:200px;
+    height:100px;
+    text-align:center;
+    vertical-align: middle;
+    position:fixed;
+    top:50%;
+    left: 50%;
+    margin-top:-50px;
+    margin-left: -100px; */
+  }
+
+  #turnBar {
+    display: none;
+    color:white;
+    position:fixed;
+    top:0px;
+    width:100%;
+    height:60px;
+    padding:10px;
+    background-color: grey;
+    /* width:180px; */
+  }
+
+#turnBar > div {
+  display:inline-block;
+  margin-left:75px;
+  vertical-align: middle;
+}
+
+#turnBar > div > h1 {
+  font-size:30px;
+}
+
+  #timer{
+    /* display:inline-block;
+    margin-left:50px; */
+    /* width:180px; */
+    /* border: 2px solid black; */
+    /* border-radius: 10px; */
+    /* color:black; */
+    /* padding:10px; */
+    /* margin:20px; */
+    /* line-height:30px; */
+  }
+
+ 
+  #lastRoundPoints{
+    color:blue;
+  }
+  #lastRoundTimePenalty{
+    color: red;
+  }
+
+  .embeddingText {
+    font-family:monospace;
+    font-size:14px;
+    font-weight:bold;
+    letter-spacing:0.75px;
+  }
+
+  #newEmbeddingText {
+    font-family:monospace;
+    font-size:26px;
+    font-weight:bold;
+  }
+
+  .player1text{
+    fill: orangered;
+  }
+
+  .player2text{
+    fill:dodgerblue;
+  }
+  .player0text{
+    fill:grey;
+  }
+ 
+
+  .plotScore{
+    font-family:monospace;
+    font-size:20px;
+    /* font-weight:bold; */
+  }
+
+  .player1line{
+    stroke: orangered;
+    stroke-width: 3;
+    opacity: 0.6;
+    /* stroke-dasharray: 3; */
+  }
+  .player2line{
+    stroke: dodgerblue;
+    stroke-width: 3;
+    opacity: 0.6;
+    /* stroke-dasharray: 3; */
+  }
+
+  #rules{
+    margin:auto;
+    width:450px;
+    margin-bottom:50px;
+    font-size:20px;
+  }
+  #tsneSVG{
+    width:100%;
+    padding-top:70px;
+    /* text-align:right; */
+  }
+  .title{
+    text-transform: uppercase;
+    font-weight:bold;
+    padding-bottom:15px;
+    margin-bottom:8px;
+    margin-top:2px;
+    letter-spacing: 4px;
+  }
+
+  #playerContainer{
+    margin-left:0px;
+  }
+
+  #playerOneStats > .title{
+    border-bottom: 3px solid orangered;
+    color:orangered;
+  }
+  #playerTwoStats > .title{
+    border-bottom: 3px solid dodgerblue;
+    color:dodgerblue;
+  }
+  .playerStats{
+    width:160px;
+    padding:25px;
+    margin:auto;
+    margin-top:20px;
+    text-align:left;
+    display:none;
+    position:fixed;
+    top:0px;
+    box-shadow: 10px 10px rgba(128,128,128, 0.5);
+    background-color: white;
+  }
+
+  .playerStats p{
+    font-family: roboto;
+    font-size: 11px;
+    text-transform:uppercase;
+    width: 50px;
+    display: inline-block;
+    padding-right:20px;
+    font-weight: bold;
+    letter-spacing: 1px;
+    margin-right: 6px;
+  }
+  .playerStats h2{
+    display: inline-block;
+    vertical-align: middle;
+    margin-top: 12px;
+    margin-bottom: 12px;
+    font-size:24px;
+  }
+  #playerOneStats{
+    border: 3px solid orangered;
+    color: orangered;
+    left:60px;
+  }
+  #playerOneStats p {
+    /* border-right: 2px solid orangered; */
+  }
+  #playerTwoStats{
+    border: 3px solid dodgerblue;
+    color: dodgerblue;
+    right:70px;
+  }
+  #playerTwoStats p {
+    /* border-right: 2px solid dodgerblue; */
+  }
+ 
+.playerBars{
+  width: 60px;
+  /* height: 100px; */
+  bottom: 0px;
+  position: fixed;
+}
+
+#playerOneBar{
+  background-color: orangered;
+}
+#playerTwoBar{
+  background-color: dodgerblue;
+  right:0px;
+}
+
+  #turnInfo{
+    /* width:180px; */
+    /* padding:10px; */
+    /* margin:auto;
+    display: inline-block; */
+    /* margin-top:10px; */
+  }
+
+  #highScore{
+    position: fixed;
+    display:none;
+    width:40%;
+    left: 50%;
+    margin-left:-23%;
+    top: 30%;
+    margin-top: -10%;
+    padding: 40px 40px 60px 40px;
+    background-color: white;
+    box-shadow: 10px 10px rgba(128,128,128, 0.5);
+    border: 3px solid black;
+    max-height: 80%;
+    overflow:scroll;
+  }
+
+  #highScore input{
+    width: 50%;
+    font-size: 24px;
+    height: 34px;
+    font-family: monospace;
+    color: grey;
+    padding: 10px;
+    border: 3px solid grey;
+    margin-top: 40px;
+    margin-bottom: 10px;
+    color: grey;
+  }
+
+  #highScore input:focus{
+    outline:0;
+  }
+
+  #highScore button{
+    margin-left:20px;
+    font-size:18px;
+    font-family: monospace;
+    font-weight: bold;
+    height:60px;
+    padding:10px;
+    border: 3px solid black;
+    color:black;
+    box-shadow: 3px 3px black;
+    cursor:pointer;
+  }
+
+  #highScore button:hover{
+    border: 3px solid fuchsia;
+    color:fuchsia;
+    box-shadow: 3px 3px fuchsia; 
+  }
+
+  #highScore button:active{
+    box-shadow: 3px 1px rgba(128,128,128, 0.5);
+    transform: translateY(2px)
+  }
+
+  #highScore button:focus{
+    outline:0;
+  }
+
+#closeHighScore{
+  position:absolute;
+  top:0px;
+  right:8px;
+  padding:10px;
+  font-weight:bold;
+  font-size:20px;
+  cursor:pointer;
+}
+
+#closeHighScore:hover{
+  color:fuchsia;
+}
+
+#highScore p{
+  font-size:36px;
+}
+
+  </style>
+
+
+  <meta charset="UTF-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>word2vec</title>
+  <script src="https://cdn.jsdelivr.net/npm/@tensorflow/tfjs@0.13.3/dist/tf.min.js"> </script>
+  <script src="https://cdn.jsdelivr.net/npm/@tensorflow/tfjs-tsne"></script>
+  <script src="https://d3js.org/d3.v4.min.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/5.6.0/firebase.js"></script>
+  <script src="https://d3js.org/d3-ease.v1.min.js"></script>
+
+</head>
+
+<body>
+  <div id="rules">
+  <p><h2>Objectives:</h2></p>
+  <p>The computer starts the game off with a random word. Two players then take turns saying words that are as unrelated to the last played word as possible, as quickly as possible.</p>
+</div>
+
+<div id="start-button">Loading word2vec Model...</div>
+
+<div id="tsneSVG"></div>
+
+
+<div id="turnBar">
+    <!-- <p>Current Word:</p> -->
+  <div id="playerContainer"><h1 id="player"></h1></div>
+
+  <div id="timer">
+      <h1 id="countDown"></h1>
+    </div>
+
+  <div id="error"><h1 id="tryAgain"></h1></div>
+
+  <div id="restartButtonContainer">
+      <button id="restart-button" onclick="start();">Play Again</button>
+    </div>
+
+</div>
+
+
+<div class="playerBars" id="playerOneBar"></div>
+<div class="playerBars" id="playerTwoBar"></div>
+
+  <div class="playerStats" id="playerOneStats">
+    <h3 class="title">Player One</h3>
+    <p>Distance:</p>
+    <h2 id="playerOnePoints"></h2>
+    <p>Time Penalty:</p>
+    <h2 id="playerOneTimePenalty"></h2>
+    <p>Efficiency Bonus:</p>
+    <h2 id="playerOneEfficiencyBonus"></h2>
+    <p>Overall Score:</p>
+    <h2 id="playerOneScore"></h2>
+  </div>
+
+  <div class="playerStats" id="playerTwoStats">
+    <h3 class="title">Player Two</h3>
+    <p>Distance:</p>
+    <h2 id="playerTwoPoints"></h2>
+    <p>Time Penalty:</p>
+    <h2 id="playerTwoTimePenalty"></h2>
+    <p>Efficiency Bonus:</p>
+    <h2 id="playerTwoEfficiencyBonus"></h2>
+    <p>Overall Score:</p>
+    <h2 id="playerTwoScore"></h2>
+  </div>
+
+
+  <div id="highScore">
+    <div id="closeHighScore">X</div>
+    <h1>High Score!</h1>
+    <input type="text" id="hiScore_name" name="hiScore_name" size="40" required>
+    <button id="submitHighScore">SUBMIT</button>
+  </div>
+
+
+  <script src="sketch.js"></script>
+
+
+</body>
+
+</html>
