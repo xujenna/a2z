@@ -41,33 +41,34 @@
     outline:0;
   }
 
-  #restart-button{
-    width:140px;
-    height:50px;
-    border-radius: 60px;
+  #restartButtonContainer button{
+    /* width:140px; */
+    /* height:50px; */
+    /* border-radius: 60px; */
     border: 3px solid white;
     background-color: transparent;
-    display:none;
-    font-size: 16px;
+    /* display:none; */
+    font-size: 14px;
     font-family: monospace;
     font-weight:bold;
     color: white;
     padding: 10px;
     cursor:pointer;
     text-align: center;
-    box-shadow: 3px 3px white;
+    box-shadow: 1.5px 1.5px white;
+    margin-right:10px;
   }
 
-  #restart-button:hover{
+  #restartButtonContainer button:hover{
     background-color: rgba(250,250,250,0.25);
   }
 
-  #restart-button:active{
-    box-shadow: 3px 1px white;
-    transform: translateY(2px)
+  #restartButtonContainer button:active{
+    box-shadow: 1.5px 0.5px white;
+    transform: translateY(1px)
   }
 
-  #restart-button:focus{
+  #restartButtonContainer button:focus{
     outline:0;
   }
   #restartButtonContainer{
@@ -90,7 +91,7 @@
     position:fixed;
     top:0px;
     width:100%;
-    height:60px;
+    height:75px;
     padding:10px;
     background-color: grey;
     /* width:180px; */
@@ -128,7 +129,7 @@
 
   .embeddingText {
     font-family:monospace;
-    font-size:14px;
+    font-size:18px;
     font-weight:bold;
     letter-spacing:0.75px;
   }
@@ -147,7 +148,9 @@
     fill:dodgerblue;
   }
   .player0text{
-    fill:grey;
+    fill:dimgray;
+    font-size:26px!important;
+    font-weight:bold;
   }
  
 
@@ -172,14 +175,20 @@
 
   #rules{
     margin:auto;
-    width:450px;
+    width:600px;
     margin-bottom:50px;
     font-size:20px;
+    line-height:26px;
   }
   #tsneSVG{
     width:100%;
     padding-top:70px;
     /* text-align:right; */
+  }
+  #tsneSVG svg{
+    display:none;
+    position:fixed;
+    top:75px;
   }
   .title{
     text-transform: uppercase;
@@ -369,8 +378,8 @@
 
 <body>
   <div id="rules">
-  <p><h2>Objectives:</h2></p>
-  <p>The computer starts the game off with a random word. Two players then take turns saying words that are as unrelated to the last played word as possible, as quickly as possible.</p>
+  <p><h2>Are you a <i>real</i> New Yorker?</h2></p>
+  <p>Recent transplants love to take pride in how much they've assimilated to the city's culture. Well, here's your chance to quantify how cool and cynical you've become by comparing your opinions with those of all other New Yorkers—at least, those active on Twitter in 2018.</p> <p>The computer will volley hot topic keywords from the past year, and two players will have one shot to prove how aligned they are with most common New York opinions. The closer your response is to the topic, the more points you score— but you have to be quick, because nothing is less cool than trying too hard.</p>
 </div>
 
 <div id="start-button">Loading word2vec Model...</div>
@@ -389,23 +398,22 @@
   <div id="error"><h1 id="tryAgain"></h1></div>
 
   <div id="restartButtonContainer">
-      <button id="restart-button" onclick="start();">Play Again</button>
+      <!-- <button id="restart-button" onclick="restartGame();">Play Again</button> -->
     </div>
 
 </div>
 
-
+<!-- 
 <div class="playerBars" id="playerOneBar"></div>
-<div class="playerBars" id="playerTwoBar"></div>
+<div class="playerBars" id="playerTwoBar"></div> -->
 
   <div class="playerStats" id="playerOneStats">
     <h3 class="title">Player One</h3>
     <p>Distance:</p>
-    <h2 id="playerOnePoints"></h2>
+    <h2 id="playerOneDistance"></h2>
     <p>Time Penalty:</p>
     <h2 id="playerOneTimePenalty"></h2>
-    <p>Efficiency Bonus:</p>
-    <h2 id="playerOneEfficiencyBonus"></h2>
+
     <p>Overall Score:</p>
     <h2 id="playerOneScore"></h2>
   </div>
@@ -413,11 +421,9 @@
   <div class="playerStats" id="playerTwoStats">
     <h3 class="title">Player Two</h3>
     <p>Distance:</p>
-    <h2 id="playerTwoPoints"></h2>
+    <h2 id="playerTwoDistance"></h2>
     <p>Time Penalty:</p>
     <h2 id="playerTwoTimePenalty"></h2>
-    <p>Efficiency Bonus:</p>
-    <h2 id="playerTwoEfficiencyBonus"></h2>
     <p>Overall Score:</p>
     <h2 id="playerTwoScore"></h2>
   </div>
@@ -431,7 +437,7 @@
   </div>
 
 
-  <script src="sketch.js"></script>
+  <script src="twitter.js"></script>
 
 
 </body>

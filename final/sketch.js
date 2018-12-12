@@ -458,7 +458,7 @@ function gameOver(playerNum){
     else{
       minThreshold = scoresKeys[5];
     }
-
+    
     console.log("winningScore: " + winningScore)
     console.log("minThreshold: " + minThreshold)
 
