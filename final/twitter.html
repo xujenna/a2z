@@ -12,6 +12,10 @@
     background-color: whitesmoke;
   }
 
+  #start-button{
+    margin-bottom:100px;
+  }
+
   #start-button > button{
     width:300px;
     height:300px;
@@ -172,14 +176,44 @@
     opacity: 0.6;
     /* stroke-dasharray: 3; */
   }
-
-  #rules{
+  #homepage{
+    margin-top:100px;
+  }
+  #homepage h3{
+    border-bottom: 1px solid black;
+  }
+  #intro{
     margin:auto;
-    width:600px;
+    width:55%;
     margin-bottom:50px;
     font-size:20px;
-    line-height:26px;
+    line-height:28px;
   }
+  #rules{
+    font-size: 16px;
+    width:30%;
+    display:inline-block;
+    text-align:left;
+    margin-right:40px;
+    line-height:24px;
+  }
+
+  #demo{
+    display:inline-block;
+    width:100%;
+    height:300px;
+  }
+  #info{
+    font-size: 16px;
+    width:30%;
+    display:inline-block;
+    text-align:left;
+    margin-left:40px;
+    vertical-align: top;
+    line-height:24px;
+  }
+
+
   #tsneSVG{
     width:100%;
     padding-top:70px;
@@ -294,7 +328,7 @@
     background-color: white;
     box-shadow: 10px 10px rgba(128,128,128, 0.5);
     border: 3px solid black;
-    max-height: 80%;
+    max-height: 70%;
     overflow:scroll;
   }
 
@@ -377,12 +411,35 @@
 </head>
 
 <body>
+
+<div id="homepage">
+  <div id="intro">
+    <p>
+        <h2>🗽🍎🚕</h2>
+        <h1>How New York are you?</h1></p>
+    <p>So you think you're a real New Yorker? Here's your chance to quantify how cool and cynical you are by comparing your opinions with those of all other New Yorkers—at least, those active on Twitter in 2018.</p>
+  </div>
   <div id="rules">
-  <p><h2>Are you a <i>real</i> New Yorker?</h2></p>
-  <p>Recent transplants love to take pride in how much they've assimilated to the city's culture. Well, here's your chance to quantify how cool and cynical you've become by comparing your opinions with those of all other New Yorkers—at least, those active on Twitter in 2018.</p> <p>The computer will volley hot topic keywords from the past year, and two players will have one shot to prove how aligned they are with most common New York opinions. The closer your response is to the topic, the more points you score— but you have to be quick, because nothing is less cool than trying too hard.</p>
+    <p><h3 class="title">How to play:</h3></p>
+    <p>Speakers, a microphone (laptop built-ins are fine), and the Chrome browser are required. The computer will volley hot topic keywords from the past year, and two players will have one shot per topic to prove how aligned they are with most common New York opinions. But you have to be quick, because nothing is less cool than trying too hard.</p>
+    <p onclick="demo();" style="cursor:pointer"><i>Click here to view a demo.</i></p>
+    <p onclick="micTest();" style="cursor:pointer" id="micTest"><i>Click here to test your mic.</i></p>
+
+    <p id="playerNumDemo"></p>
+    <svg id="demo"></svg>
+  </div>
+
+  <div id="info">
+    <p><h3 class="title">How it works:</h3></p>
+      <p>Each topic has a corresponding word2vec model that's trained on relevant tweets that originated in NYC from the past year. Word2vec models are able to statistically analyze corpora to estimate the relationships among its words, and embed them into a multidimensional space. Theoretically, the closer words are in this space, the more frequently they appear near each other in the corpus—thus, you can get a sense of what New Yorkers are tweeting, about which subjects, and with what frequency. Tensorflowjs then calculates the distances between words, which serves as the basis for the scoring system. The closer your responses are to the topic—and the faster you respond—the higher you score. For more details, <a href="http://www.xujenna.com/itp_blog/2018/12/14/how-new-york-are-you-documentation/" target="new">see my documentation.</a></p>
+    </div>
+
+  <div id="start-button">Loading word2vec Model...</div>
+  <p style="font-size:12px">A project by <a href="http://www.xujenna.com" target="new">Jenna Xu</a>, completed in the Fall 2018 semester at ITP NYU.</p>
+
 </div>
 
-<div id="start-button">Loading word2vec Model...</div>
+
 
 <div id="tsneSVG"></div>
 
@@ -414,7 +471,7 @@
     <p>Time Penalty:</p>
     <h2 id="playerOneTimePenalty"></h2>
 
-    <p>Overall Score:</p>
+    <p>NYC Quotient:</p>
     <h2 id="playerOneScore"></h2>
   </div>
 
@@ -424,7 +481,7 @@
     <h2 id="playerTwoDistance"></h2>
     <p>Time Penalty:</p>
     <h2 id="playerTwoTimePenalty"></h2>
-    <p>Overall Score:</p>
+    <p>NYC Quotient:</p>
     <h2 id="playerTwoScore"></h2>
   </div>
 
@@ -438,7 +495,6 @@
 
 
   <script src="twitter.js"></script>
-
 
 </body>
 

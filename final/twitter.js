@@ -66,8 +66,8 @@ let kanyeW2V = new Word2Vec('word2vec/scraped_tweets/2018_Kanye/kanye_tsne.json'
 let amazonW2V = new Word2Vec('word2vec/scraped_tweets/2018_Amazon/amazon_tsne.json', modelLoaded);
 let seduceMeW2V = new Word2Vec('word2vec/scraped_tweets/2018_SeduceMeIn4Words/SeduceMeIn4Words_tsne.json', modelLoaded);
 
-let allModels = [trumpW2V, pizzaW2V, MTAW2V, cuomoW2V, kanyeW2V, amazonW2V, seduceMeW2V]
-let allStarters = ["trump", "pizza", "mta", "cuomo", "kanye", "amazon", "#seducemein4words"]
+let allModels = [pizzaW2V, trumpW2V, MTAW2V, cuomoW2V, kanyeW2V, amazonW2V, seduceMeW2V]
+let allStarters = ["pizza", "trump", "mta", "cuomo", "kanye", "amazon", "#seducemein4words"]
 const SpeechRecognition = webkitSpeechRecognition;
 const synth = window.speechSynthesis;
 
@@ -127,6 +127,185 @@ function modelLoaded() {
 }
 
 
+function demo(){
+  let demoSVG = d3.select("#demo");
+
+  demoSVG.selectAll("text").remove()
+  demoSVG.selectAll("line").remove()
+  demoSVG.selectAll("circle").remove()
+
+  let playerIndicator = document.getElementById("playerNumDemo");
+  playerIndicator.style.fontWeight = "bold";
+  playerIndicator.textContent = "PLAYER 1 TURN";
+  playerIndicator.style.color = "orangered"
+
+  speak("cat");
+
+  demoSVG.append("circle")
+    .attr("cx", 225)
+    .attr("cy", 150)
+    .attr("r", 4)
+    .attr("fill", "dimgray");
+  demoSVG.append("text")
+    .text("cat")
+    .attr("x", 225 + 10)
+    .attr("y", 150 + 5)
+    .attr("id", "newEmbeddingText")
+    .attr("class", "player0text");
+
+
+  var msg = new SpeechSynthesisUtterance();
+  var voices = window.speechSynthesis.getVoices();
+  msg.voice = voices[10]; // Note: some voices don't support altering params
+  msg.voiceURI = 'native';
+  msg.volume = 1; // 0 to 1
+  msg.rate = 1; // 0.1 to 10
+  msg.pitch = 1.5; //0 to 2
+  msg.text = 'so cute';
+  msg.lang = 'en-US';
+  setTimeout(function(){
+    speechSynthesis.speak(msg);
+    setTimeout(function(){
+      demoTurn(msg.text, 1);
+    }, 800);
+  }, 1500);
+
+var msg2 = new SpeechSynthesisUtterance();
+msg2.voice = voices[5]; // Note: some voices don't support altering params
+msg2.voiceURI = 'native';
+msg2.volume = 1; // 0 to 1
+msg2.rate = 1; // 0.1 to 10
+msg2.pitch = 1; //0 to 2
+msg2.text = 'very fluffy';
+msg2.lang = 'en-US';
+
+setTimeout(function(){
+  playerIndicator.textContent = "PLAYER 2 TURN"
+  playerIndicator.style.color = "dodgerblue"
+  speechSynthesis.speak(msg2);
+  setTimeout(function(){
+    demoTurn(msg2.text, 2);
+  }, 800);}, 3000);
+
+
+  setTimeout(function(){
+    demoSVG.selectAll("text").remove()
+    demoSVG.selectAll("line").remove()
+    demoSVG.selectAll("circle").remove();
+
+    speak("dog");
+    demoSVG.append("circle")
+    .attr("cx", 225)
+    .attr("cy", 150)
+    .attr("r", 4)
+    .attr("fill", "dimgray");
+  demoSVG.append("text")
+    .text("dog")
+    .attr("x", 225 + 10)
+    .attr("y", 150 + 5)
+    .attr("id", "newEmbeddingText")
+    .attr("class", "player0text");
+    playerIndicator.textContent = "PLAYER 1 TURN"
+    playerIndicator.style.color = "orangered"
+  }, 5000);
+
+  setTimeout(function(){
+    msg.text = "i want one"
+    speechSynthesis.speak(msg);
+    setTimeout(function(){
+      demoTurn(msg.text, 1);
+    }, 800);
+  }, 6500);
+
+  setTimeout(function(){
+    playerIndicator.textContent = "Player 2 TURN"
+    playerIndicator.style.color = "dodgerblue"
+    msg2.text = "they're good dogs brent"
+    speechSynthesis.speak(msg2);
+    setTimeout(function(){
+      demoTurn(msg2.text, 2);
+    }, 1000);
+  }, 8000);
+
+  function demoTurn(string, playerNum){
+    let words = string.split(" ");
+    words.forEach(function(d){
+      let word = d;
+      let xCoord = Math.random() * 430;
+      let yCoord = Math.random() * 280;
+      var path = demoSVG.append("line")
+      .attr("x1", 225)
+      .attr("y1", 150)
+      .attr("x2", xCoord)
+      .attr("y2", yCoord)
+      .attr("class", "player" + playerNum + "line")
+      .attr("stroke-width", 3)
+      .attr("opacity", 0.6)
+    
+    var totalLength = path.node().getTotalLength();
+    
+    path
+      .attr("stroke-dasharray", totalLength + " " + totalLength)
+      .attr("stroke-dashoffset", totalLength)
+      .transition()
+      .duration(250)
+      .ease(d3.easeLinear)
+      .attr("stroke-dashoffset", 0)
+      .on("end", function (d) { path.attr("stroke-dasharray", 3); plotDemoWord(word, playerNum, xCoord, yCoord); })
+    })
+  
+  function plotDemoWord(word,playerNum, xCoord, yCoord) {
+  
+    demoSVG.append("text")
+    .text(word)
+    .attr("x", xCoord + 10)
+    .attr("y", yCoord + 5)
+    .attr("id", "embeddingText")
+    .attr("class", "player" + playerNum + "text");
+    demoSVG.append("circle")
+    .attr("cx", xCoord)
+    .attr("cy", yCoord)
+    .attr("r", 4)
+    .attr("fill", "silver")
+    .attr("class", "player" + playerNum + "text");
+  }
+
+}
+}
+
+function micTest() {
+  let instructions = document.getElementById('micTest');
+  instructions.textContent += " Give your mic permission, then say something. The transcript will appear here: "
+  
+  const recognition = new SpeechRecognition();
+  recognition.lang = 'en-US';
+  recognition.continuous = true;
+  recognition.interimResults = true;
+  recognition.start();
+
+
+  recognition.onresult = event => {
+    for (var i = event.resultIndex; i < event.results.length; ++i) {
+      if (event.results[i].isFinal) {
+        recognition.stop();
+        instructions.textContent += event.results[i][0].transcript;
+      }
+      // else{
+      //   interim_transcript += event.results[i][0].transcript;
+      // }
+    }
+  }
+  recognition.onend = () => {
+    instructions.textContent += " 👍"
+  }
+  recognition.onerror = event => {
+    console.log("error: " + event.error);
+    instructions.textContent += "Error: " + event.error + ". Are you using Chrome?"
+
+  }
+}
+
+
 function start() {
   clearInterval(counter);
 
@@ -144,7 +323,7 @@ function start() {
   document.getElementById("highScore").style.display = "none";
   // document.getElementById('restart-button').style.display = "none";
   document.querySelector('#start-button > button').style.display = "none";
-  document.getElementById('rules').style.display = "none";
+  document.getElementById('homepage').style.display = "none";
 
 
   turnBar.style.display = "block";
@@ -217,7 +396,12 @@ function newTurn() {
   let count = 0;
   counter = setInterval(function () {
     count += 1;
-    document.getElementById('countDown').textContent = "00:0" + count;
+    if(count < 10){
+      document.getElementById('countDown').textContent = "00:0" + count;
+    }
+    else if (count >= 10){
+      document.getElementById('countDown').textContent = "00:" + count;
+    }
   }, 1000);
 
 
@@ -266,68 +450,71 @@ function newTurn() {
   recognition.onend = () => {
     console.log("ended recording");
     // try {  
-    let plotScores = document.querySelectorAll(".plotScore");
-    if(plotScores.length > 0){
-    plotScores.forEach(function(d){d.remove();})
-    }
-    let totalDistance = Math.round(distance(newString, timePenalty, playerNum));
 
-    if(totalDistance >=0){
-      // let newScore = Math.pow(totalDistance,2) / 100;
-      let newScore = Math.round(100000 / (totalDistance + timePenalty));
-      // let newScore = totalDistance+timePenalty;
-      console.log("score: " + newScore)
-      console.log("distance: " + totalDistance)
-      console.log("timePenalty: " + timePenalty)  
-      if (playerNum == 1) {
-        playerOneScore += newScore;
-        playerOneDistance += totalDistance;
-        playerOneTimePenalty += timePenalty;
-        document.getElementById('playerOneScore').textContent = playerOneScore;
-        document.getElementById('playerOneDistance').textContent = playerOneDistance;
-        document.getElementById('playerOneTimePenalty').textContent = playerOneTimePenalty;
-        console.log("player 1 gets " + newScore)
+    if(newString.length > 0){
+      let plotScores = document.querySelectorAll(".plotScore");
+      if(plotScores.length > 0){
+      plotScores.forEach(function(d){d.remove();})
       }
-      else if (playerNum == 2) {
-        playerTwoScore += newScore;
-        playerTwoDistance += totalDistance;
-        playerTwoTimePenalty += timePenalty;
-        document.getElementById('playerTwoScore').textContent = playerTwoScore;
-        document.getElementById('playerTwoDistance').textContent = playerTwoDistance;
-        document.getElementById('playerTwoTimePenalty').textContent = playerTwoTimePenalty;
-        console.log("player 2 gets " + newScore)
-      }
-
-      turns += 1;
-
-      if (turns == 2) {
-        gameNum += 1;
-        if (gameNum == allModels.length) {
-          setTimeout(function () { gameOver(); }, 1000);
+      let totalDistance = Math.round(distance(newString, timePenalty, playerNum));
+  
+      if(totalDistance >=0){
+        // let newScore = Math.pow(totalDistance,2) / 100;
+        let newScore = Math.round(100000 / (totalDistance + timePenalty));
+        // let newScore = totalDistance+timePenalty;
+        console.log("score: " + newScore)
+        console.log("distance: " + totalDistance)
+        console.log("timePenalty: " + timePenalty)  
+        if (playerNum == 1) {
+          playerOneScore += newScore;
+          playerOneDistance += totalDistance;
+          playerOneTimePenalty += timePenalty;
+          document.getElementById('playerOneScore').textContent = playerOneScore;
+          document.getElementById('playerOneDistance').textContent = playerOneDistance;
+          document.getElementById('playerOneTimePenalty').textContent = playerOneTimePenalty;
+          console.log("player 1 gets " + newScore)
+        }
+        else if (playerNum == 2) {
+          playerTwoScore += newScore;
+          playerTwoDistance += totalDistance;
+          playerTwoTimePenalty += timePenalty;
+          document.getElementById('playerTwoScore').textContent = playerTwoScore;
+          document.getElementById('playerTwoDistance').textContent = playerTwoDistance;
+          document.getElementById('playerTwoTimePenalty').textContent = playerTwoTimePenalty;
+          console.log("player 2 gets " + newScore)
+        }
+  
+        turns += 1;
+  
+        if (turns == 2) {
+          gameNum += 1;
+          if (gameNum == allModels.length) {
+            setTimeout(function () { gameOver(); }, 1000);
+          }
+          else {
+            setTimeout(function () { start() }, 2000);
+          }
         }
         else {
-          setTimeout(function () { start() }, 2000);
+          newTurn();
         }
       }
       else {
-        newTurn();
-      }
-    }
-    else {
-      speak(newString + " not in model.")
-      turns += 1;
-
-      if (turns == 2) {
-        gameNum += 1;
-        if (gameNum == allModels.length) {
-          setTimeout(function () { gameOver(); }, 1000);
+        speak(newString + " not in model.")
+        turns += 1;
+  
+        if (turns == 2) {
+          gameNum += 1;
+          if (gameNum == allModels.length) {
+            setTimeout(function () { gameOver(); }, 1000);
+          }
+          else {
+            setTimeout(function () { start() }, 3000);
+          }
         }
         else {
-          setTimeout(function () { start() }, 3000);
+          setTimeout(function () { newTurn() }, 3000);
         }
-      }
-      else {
-        setTimeout(function () { newTurn() }, 3000);
       }
     }
 
@@ -561,7 +748,7 @@ function gameOver() {
 
   let buttonContainer = document.getElementById('restartButtonContainer');
   buttonContainer.style.display = "inline-block"
-  buttonContainer.innerHTML = '<button onclick="showSVG(0);">Trump</button><button onclick="showSVG(1);">pizza</button><button onclick="showSVG(2);">MTA</button><button onclick="showSVG(3);">Cuomo</button><button onclick="showSVG(4);">Kanye</button><button onclick="showSVG(5);">Amazon</button><button onclick="showSVG(6);">#SeduceMeIn4Words</button>'
+  buttonContainer.innerHTML = '<button onclick="showSVG(0);">pizza</button><button onclick="showSVG(1);">Trump</button><button onclick="showSVG(2);">MTA</button><button onclick="showSVG(3);">Cuomo</button><button onclick="showSVG(4);">Kanye</button><button onclick="showSVG(5);">Amazon</button><button onclick="showSVG(6);">#SeduceMeIn4Words</button>'
 
   document.getElementById('tryAgain').textContent = "";
 
@@ -604,12 +791,12 @@ function gameOver() {
     let scores = snapshot.val();
     if(scores !== undefined && scores !== null){
       let scoresKeys = Object.keys(scores).sort(function (a, b) { return b - a });
-      if (scoresKeys.length < 6) {
+      if (scoresKeys.length < 10) {
         // minThreshold = scoresKeys[scoresKeys.length-1]
         minThreshold = 0;
       }
       else {
-        minThreshold = scoresKeys[5];
+        minThreshold = scoresKeys[9];
       }
     }
     else{
@@ -656,7 +843,7 @@ function highScore(playerNum, totalScore, totalDistance, totalTimePenalty) {
   highScoreDiv.style.display = "block";
   let highScoreInput = document.getElementById("hiScore_name");
   highScoreInput.style.display = "inline-block";
-  highScoreInput.value = "Player " + playerNum + " Name";
+  highScoreInput.placeholder = "Player " + playerNum + " Name";
   let submitButton = document.getElementById("submitHighScore");
   submitButton.style.display = "inline-block";
 
@@ -683,10 +870,12 @@ function highScore(playerNum, totalScore, totalDistance, totalTimePenalty) {
     scoresDB.on('value', (snapshot) => {
       let scores = snapshot.val();
       let scoresKeys = Object.keys(scores).sort(function (a, b) { return b - a });
-      scoresKeys.forEach(function (d) {
-        let entry = document.createElement('p')
-        entry.textContent = scores[d]['playerName'] + ": " + d;
-        highScoreDiv.appendChild(entry)
+      scoresKeys.forEach(function (d,i) {
+        if(i<=10){
+          let entry = document.createElement('p')
+          entry.textContent = scores[d]['playerName'] + ": " + d;
+          highScoreDiv.appendChild(entry)
+        }
       })
     })
   }
@@ -710,10 +899,12 @@ function highScoreBoard() {
   scoresDB.on('value', (snapshot) => {
     let scores = snapshot.val();
     let scoresKeys = Object.keys(scores).sort(function (a, b) { return b - a });
-    scoresKeys.forEach(function (d) {
-      let entry = document.createElement('p')
-      entry.textContent = scores[d]['playerName'] + ": " + d;
-      highScoreDiv.appendChild(entry)
+    scoresKeys.forEach(function (d,i) {
+      if(i<=10){
+        let entry = document.createElement('p')
+        entry.textContent = scores[d]['playerName'] + ": " + d;
+        highScoreDiv.appendChild(entry)
+      }
     })
   })
   document.getElementById('closeHighScore').onclick = function () {
